@@ -11,3 +11,8 @@ presentation.tex.bak
 presentation.toc
 presentation.vrb
 texput.log
+data/out-*
+data/mydata.csv
+data/data.sqlite3
+data/preproc.csv
+data/get_data_ganak.py
