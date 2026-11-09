@@ -10,7 +10,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,backgrounds}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,backgrounds,decorations.pathreplacing}
 \usepackage{marvosym}
 
 \definecolor{stageA}{RGB}{ 70,115,170}
@@ -37,6 +37,9 @@
   el/.style   ={fill=white, draw=none, font=\scriptsize},
   dot/.style  ={circle, fill=black, minimum size=5pt, inner sep=0pt},
   sat/.style  ={fill=stageB!40, minimum size=0.3cm},
+  br/.style   ={decorate, decoration={brace, amplitude=4pt}, thick, draw=ioBox},
+  lab/.style  ={font=\scriptsize\bfseries},
+  role/.style ={font=\scriptsize, align=center, text width=#1, anchor=north},
   bad/.style  ={fill=stageC!50, minimum size=0.3cm},
 }
 
@@ -389,8 +392,27 @@
     $S \subseteq \mathcal{P} \subseteq D$: a \emph{small} $S$ to reach SAT
     mode early, a \emph{large} $D$ to split into components well.
   \end{definition}
+  \vspace{-3mm}
   \begin{center}
-    \includegraphics[scale=1.2]{figs/vars_fig.pdf}
+  \begin{tikzpicture}[x=1cm, y=1cm]
+    \fill[stageA!60]  (0,0)    rectangle (2,0.7);
+    \fill[stageA!25]  (2,0)    rectangle (5,0.7);
+    \fill[stageB!30]  (5,0)    rectangle (8.5,0.7);
+    \fill[ioBox!15]   (8.5,0)  rectangle (13,0.7);
+    \draw[ioBox] (0,0) rectangle (13,0.7);
+    \foreach \x in {2,5,8.5} \draw[white, line width=1.2pt] (\x,0) -- (\x,0.7);
+    \node[font=\small] at (1,0.35)    {$S$};
+    \node[font=\small] at (3.5,0.35)  {$\mathcal{P}\setminus S$};
+    \node[font=\small] at (6.75,0.35) {$D\setminus\mathcal{P}$};
+    \node[font=\small] at (10.75,0.35){$V\setminus D$};
+    \draw[br] (0,0.8)  -- (2,0.8)  node[midway, above=3pt, lab] {S-set};
+    \draw[br] (0,1.4) -- (5,1.4) node[midway, above=3pt, lab] {projection $\mathcal{P}$};
+    \draw[br] (0,2.0)  -- (8.5,2.0) node[midway, above=3pt, lab] {D-set};
+    \node[role=19mm] at (1,-0.08)    {all decided\\$\Rightarrow$ SAT mode};
+    \node[role=28mm] at (3.5,-0.08)  {defined by $S$:\\may branch on};
+    \node[role=33mm] at (6.75,-0.08) {\emph{may} branch on:\\better component splits};
+    \node[role=42mm] at (10.75,-0.08){never branched on: propagated,\\or left to the SAT solver};
+  \end{tikzpicture}
   \end{center}
 \end{frame}
 
