@@ -22,7 +22,7 @@ GRAPHS = {
         ("out-others-d4", "d4"),
         ("out-ganak-mc2324-14063135-0", "Ganak2 (CAV'25)"),
     ]),
-    "new-versions": dict(yr=(1100, 1225), runs=[
+    "new-versions": dict(yr=(1100, 1225), xr=(500, TOUT), runs=[
         ("out-ganak-mccomp2324-1783906-0", "Jun 2026 baseline"),
         ("out-ganak-mccomp2324-2345011-2", "+new TD selection"),
         ("out-ganak-mccomp2324-2366186-3", "+TD flat/dense rules"),
@@ -60,7 +60,7 @@ set xlabel "Time (s)"
 set ylabel "Instances counted (of 1600)"
 set grid lc rgb "#dddddd"
 set border lc rgb "#555555"
-set xrange [0:{TOUT}]
+set xrange [{g.get('xr', (0, TOUT))[0]}:{g.get('xr', (0, TOUT))[1]}]
 set yrange [{lo}:{hi}]
 plot {", ".join(plots)}
 """
