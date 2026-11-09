@@ -1,0 +1,14 @@
+flowchart LR
+  Q{{"indep. vars<br/>left?"}}
+  Q -->|no| SAT["SAT solver:<br/>one solution is enough"]
+  Q -->|yes| DEC["decide a var of this component<br/>(TD + VSIDS + frequency)"]
+  DEC --> P{{propagate}}
+  P -->|ok| OUT([next component])
+  P -->|conflict| UIP["learn 1-UIP clause,<br/>ChronoBT;<br/>branch counts 0"]
+  UIP -->|asserting literal| P
+  UIP -->|branch done| ASC([ascend])
+
+  classDef s fill:#f8e2e2,stroke:#c83c3c
+  classDef term fill:#e6f2e3,stroke:#59a14f
+  class DEC,SAT,UIP s
+  class OUT,ASC term

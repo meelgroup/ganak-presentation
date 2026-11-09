@@ -217,6 +217,48 @@
   \end{columns}
 \end{frame}
 
+\begin{frame}{The main loop}
+  \centering
+  \includegraphics[width=\linewidth]{figs/mermaid/main-loop.pdf}
+
+  \bigskip
+  \raggedright\small
+  \begin{itemize}
+    \item \textbf{Descend}: cut the formula into components, decide a variable in one of them
+    \item \textbf{Ascend}: add and multiply the sub-counts back up the stack
+    \item We count on the way \emph{up}: much cheaper, e.g.\ a conflict
+      means there is nothing to count
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Descending: decide, propagate, analyse conflicts}
+  \centering
+  \includegraphics[width=\linewidth]{figs/mermaid/descend.pdf}
+
+  \bigskip
+  \raggedright\small
+  \begin{itemize}
+    \item This is the CDCL part, very close to a SAT solver
+    \item Counting-specific: branch only on variables of the \emph{current
+      component}, and a conflict sets the count of its branch to 0
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Ascending: components, cache, count arithmetic}
+  \centering
+  \includegraphics[width=\linewidth]{figs/mermaid/ascend.pdf}
+
+  \bigskip
+  \raggedright\small
+  \begin{itemize}
+    \item Independent components \textbf{multiply}, the two values of a
+      decision variable \textbf{add}
+    \item Every component count is cached, so it is never searched again
+    \item The same $+$ and $\times$ for every field: the engine never
+      knows which one it counts in
+  \end{itemize}
+\end{frame}
+
 % =========================================================================
 \section{Preprocessing}
 
