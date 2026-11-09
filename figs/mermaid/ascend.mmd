@@ -1,11 +1,11 @@
 flowchart LR
   A{{"component left<br/>at this level?"}}
-  A -->|"not split yet"| B["split into components;<br/>cache hits: multiply in,<br/>misses: push"]
+  A -->|"not split<br/>yet"| B["split into<br/>components;<br/>cache hits: multiply in,<br/>misses: push"]
   B --> A
   A -->|yes| H([descend])
   A -->|"none left"| J["backtrack:<br/>branch₀ + branch₁"]
-  H -.->|branch exhausted| J
-  J --> L["store in cache,<br/>multiply into parent"]
+  H -.->|"branch<br/>exhausted"| J
+  J --> L["store in cache,<br/>multiply<br/>into parent"]
   L --> A
 
   classDef dec fill:#e8eef6,stroke:#4673aa
