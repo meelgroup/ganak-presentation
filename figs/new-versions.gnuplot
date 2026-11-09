@@ -1,6 +1,6 @@
 set terminal pdfcairo enhanced color font "Helvetica,11" size 6.2in,2.7in
 set output "new-versions.pdf"
-set key outside right center spacing 1.3 samplen 2
+set key outside right center spacing 1.3 samplen 2 invert
 set xlabel "Time (s)"
 set ylabel "Instances counted (of 1600)"
 set grid lc rgb "#dddddd"
