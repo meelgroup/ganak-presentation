@@ -159,11 +159,9 @@
       {\textbf{Search}\\[1pt]
        {\scriptsize DPLL + components + probabilistic cache\\
         CDCL, ChronoBT, restarts, SAT mode, \textcolor{newc}{\textbf{dynamic BCE}}}};
-    \node[io, left=of search, text width=26mm] (out) {count over\\any field};
     \draw[fl] (in) -- (arjun);
     \draw[fl] (arjun) -- (td);
     \draw[fl] (td) -- (search);
-    \draw[fl] (search) -- (out);
   \end{tikzpicture}
   \end{center}
 
