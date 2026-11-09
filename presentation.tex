@@ -298,45 +298,6 @@
   \end{columns}
 \end{frame}
 
-\begin{frame}{\new 2QBF cover-drop: removing what cannot matter}
-  \begin{columns}[T]
-    \begin{column}{0.56\textwidth}
-      \small
-      $\psi(X)$: the clauses over the projection set $X$ only;
-      $C_i(X, Y_i)$: components over \emph{disjoint} non-projected $Y_i$.
-      We count $\#_X\big(\psi \land \textstyle\bigwedge_i \exists Y_i.\, C_i\big)$.
-      \smallskip
-
-      For each $C_i$, solve the \textbf{2QBF}
-      \ $\forall X.\; \psi(X) \rightarrow \exists Y_i.\, C_i(X, Y_i)$
-      \begin{itemize}
-        \item \textbf{true}: drop $C_i$ and its $Y_i$ entirely
-        \item \textbf{false}, but only a few $X$-cubes have no $Y_i$:
-          \textbf{replace} $C_i$ by clauses blocking those cubes
-        \item weighted $Y_i$, or out of budget: keep
-      \end{itemize}
-      \scriptsize CEGAR over $X$; each counterexample is shortened to a
-      cube by local search and SAT calls.
-    \end{column}
-    \begin{column}{0.42\textwidth}
-      \begin{exampleblock}{\small 1600 MCC'23+'24 instances}
-        \small
-        \begin{itemize}
-          \item changes \textbf{255} instances\\
-            (223 projected)
-          \item removes 2.4\,M clauses, 133\,k vars
-          \item \textbf{+7} solved, $-0$ lost\\
-            (PMC 278$\to$282, PWMC 333$\to$336)
-          \item PAR2 1969 $\to$ 1950
-        \end{itemize}
-      \end{exampleblock}
-      \scriptsize Cost: 61\,ks of extra preprocessing over the set, so
-      time on the commonly solved ones goes up 4\%. (Off vs.\ on are
-      two builds a few weeks apart.)
-    \end{column}
-  \end{columns}
-\end{frame}
-
 % =========================================================================
 \section{Search}
 
@@ -699,6 +660,47 @@
     \qquad\qquad
     Try it in your browser: \url{https://www.msoos.org/ganak/}
   \end{center}
+\end{frame}
+
+\appendix
+
+\begin{frame}{\new 2QBF cover-drop: removing what cannot matter}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \small
+      $\psi(X)$: the clauses over the projection set $X$ only;
+      $C_i(X, Y_i)$: components over \emph{disjoint} non-projected $Y_i$.
+      We count $\#_X\big(\psi \land \textstyle\bigwedge_i \exists Y_i.\, C_i\big)$.
+      \smallskip
+
+      For each $C_i$, solve the \textbf{2QBF}
+      \ $\forall X.\; \psi(X) \rightarrow \exists Y_i.\, C_i(X, Y_i)$
+      \begin{itemize}
+        \item \textbf{true}: drop $C_i$ and its $Y_i$ entirely
+        \item \textbf{false}, but only a few $X$-cubes have no $Y_i$:
+          \textbf{replace} $C_i$ by clauses blocking those cubes
+        \item weighted $Y_i$, or out of budget: keep
+      \end{itemize}
+      \scriptsize CEGAR over $X$; each counterexample is shortened to a
+      cube by local search and SAT calls.
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \begin{exampleblock}{\small 1600 MCC'23+'24 instances}
+        \small
+        \begin{itemize}
+          \item changes \textbf{255} instances\\
+            (223 projected)
+          \item removes 2.4\,M clauses, 133\,k vars
+          \item \textbf{+7} solved, $-0$ lost\\
+            (PMC 278$\to$282, PWMC 333$\to$336)
+          \item PAR2 1969 $\to$ 1950
+        \end{itemize}
+      \end{exampleblock}
+      \scriptsize Cost: 61\,ks of extra preprocessing over the set, so
+      time on the commonly solved ones goes up 4\%. (Off vs.\ on are
+      two builds a few weeks apart.)
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \end{document}
