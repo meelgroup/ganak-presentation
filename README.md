@@ -1,9 +1,12 @@
-# Presentation: Engineering an Efficient Probabilistic Exact Model Counter
+# Presentations about Ganak
 
-This is a presentation given about Ganak2, a probabilistic exact model counter.
-The presentation covers the design and implementation of the tool, its
-features, and its performance. You can find the counter
+These are presentations about Ganak, a probabilistic exact model counter. They
+cover the design and implementation of the tool, its features, and its
+performance. You can find the counter
 [here](https://github.com/meelgroup/ganak/) and you can try it out
 [here](https://www.msoos.org/ganak/).
 
-Presentation given at CAV 2025 [PDF here](ganak2-jul24-cav2025-zagreb.pdf).
+- "Engineering an Efficient Probabilistic Exact Model Counter", CAV 2025,
+  Zagreb: [PDF here](ganak2-jul24-cav2025-zagreb.pdf).
+- "Ganak: Engineering an Exact Model Counter", IIT Bombay, 10 Nov 2026:
+  [PDF here](ganak-nov10-iitb2026-mumbai.pdf).
