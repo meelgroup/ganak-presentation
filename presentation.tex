@@ -155,7 +155,7 @@
     \node[io, text width=28mm] (in) {CNF + projection\\+ weights};
     \node[sA, right=of in, text width=48mm] (arjun)
       {\textbf{Arjun preprocessing}\\[1pt]
-       {\scriptsize minimal indep.\ set, optional set, Puura simplification,
+       {\scriptsize minimal S-set, large D-set, Puura simplification,
         \textcolor{newc}{\textbf{2QBF cover-drop}}, SBVA}};
     \node[sB, right=of arjun, text width=42mm] (td)
       {\textbf{Tree decomposition}\\[1pt]
@@ -279,12 +279,12 @@
 \begin{frame}{Preprocessing with Arjun}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \begin{block}{\small Minimal projection + optional set}
+      \begin{block}{\small Small S-set + large D-set}
         \scriptsize
         Most variables are \emph{defined} by others (Padoa's theorem:
         two renamed copies cannot differ if the projection agrees).
-        Arjun shrinks the \textbf{must-branch} set, and returns a larger
-        \textbf{optional} set the counter \emph{may} branch on.
+        Arjun shrinks the projection to a small \textbf{S-set}, and grows
+        it to a large \textbf{D-set} the counter \emph{may} branch on.
       \end{block}
       \begin{block}{\small Simplified CNF}
         \scriptsize
@@ -300,11 +300,11 @@
       \centering
       \begin{tikzpicture}[node distance=2.2mm, every node/.append style={text width=58mm}]
         \node[io] (i) {\texttt{in.cnf} + projection set};
-        \node[sA, below=of i] (a) {\textbf{1. Indep.\ set minimisation} (Padoa)};
+        \node[sA, below=of i] (a) {\textbf{1. S-set minimisation} (Padoa)};
         \node[sB, below=of a] (b) {\textbf{2. Puura}: SCC, BVE, distill, subsume,\\ probe, oracle vivify/sparsify, backbone};
         \node[sB, below=of b] (c) {\textbf{3. Autarky}, Puura pass 2};
         \node[sC, below=of c, draw=newc, fill=newc!12] (d) {\textcolor{newc}{\textbf{4. 2QBF cover-drop}}};
-        \node[sC, below=of d] (e) {\textbf{5. SBVA}, extend optional set};
+        \node[sC, below=of d] (e) {\textbf{5. SBVA}, extend the D-set};
         \node[io, below=of e] (o) {\texttt{simplified.cnf} + \texttt{show}/\texttt{optshow}};
         \foreach \x/\y in {i/a,a/b,b/c,c/d,d/e,e/o} \draw[fl] (\x) -- (\y);
       \end{tikzpicture}
@@ -342,16 +342,17 @@
   \end{columns}
 \end{frame}
 
-\begin{frame}{Independent support and calling a SAT solver}
+\begin{frame}{S-set and calling a SAT solver}
   \begin{columns}[c]
     \begin{column}{0.42\textwidth}
       \small
-      Once all variables in the independent support $P$ are decided,
+      Once all variables of the \textbf{S-set} $S$ (an independent support
+      of the projection) are decided,
       there is \textbf{at most one} solution left: call a SAT solver on
       the residual formula.
       \bigskip
 
-      $V=\{x_1, x_2, x_3, x_4, \ldots \}$, \quad $P=\{x_1, x_2\}$
+      $V=\{x_1, x_2, x_3, x_4, \ldots \}$, \quad $S=\{x_1, x_2\}$
       \bigskip
 
       Exploited before by \gpmc{}.
@@ -596,7 +597,7 @@
           more clauses become blocked. Ignore them when computing
           \textbf{components} $\Rightarrow$ finer splits, more cache hits
         \item Sound in \ganak{} only on variables we never branch on:
-          not in the independent \emph{or} the optional set
+          outside the D-set
         \item Incremental, undone in groups; ChronoBT can unassign
           a variable while later ones stay set, so those are re-processed
       \end{itemize}
@@ -715,10 +716,10 @@
 \begin{frame}{Conclusions}
   \ganak{} is an exact model counter built from many parts working together:
   \begin{itemize}
-    \item \textbf{Preprocessing}: Arjun's minimal independent set and
+    \item \textbf{Preprocessing}: Arjun's minimal S-set, large D-set and
       simplification, now with \textcolor{newc}{\textbf{2QBF cover-drop}}
     \item \textbf{Probabilistic component caching}
-    \item \textbf{Independent + optional sets} with a CDCL SAT solver,
+    \item \textbf{Dual independent set} (S-set, D-set) with a CDCL SAT solver,
       ChronoBT and compensating weights, now with
       \textcolor{newc}{\textbf{dynamic BCE}}
     \item \textbf{Tree decomposition}, \textcolor{newc}{\textbf{now selected and gated}}

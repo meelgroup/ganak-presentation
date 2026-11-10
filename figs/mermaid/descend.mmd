@@ -1,5 +1,5 @@
 flowchart LR
-  Q{{"indep. vars<br/>left?"}}
+  Q{{"S-set vars<br/>left?"}}
   Q -->|no| SAT["SAT solver:<br/>one solution<br/>is enough"]
   Q -->|yes| DEC["decide a var of<br/>this component<br/>(TD + VSIDS<br/>+ frequency)"]
   DEC --> P{{propagate}}
