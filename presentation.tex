@@ -18,7 +18,7 @@
 \definecolor{stageC}{RGB}{225,140, 43}
 \definecolor{ioBox}{RGB}{ 90, 90, 90}
 \definecolor{hl}{RGB}{200, 60, 60}
-\definecolor{newc}{RGB}{214, 39, 40}
+\definecolor{newc}{RGB}{128, 60,160}
 
 \tikzset{
   io/.style   ={rectangle, rounded corners=1pt, draw=ioBox, fill=ioBox!12,
@@ -98,7 +98,7 @@
 \end{frame}
 
 % =========================================================================
-\section{Model counting}
+\section{Model counting and \ganak{}}
 
 \begin{frame}{Propositional model counting}
   \begin{columns}[T]
@@ -173,7 +173,6 @@
 \end{frame}
 
 % =========================================================================
-\section{Architecture}
 
 \begin{frame}{Ganak at a glance}
   \begin{center}
@@ -285,11 +284,11 @@
       \centering
       \begin{tikzpicture}[node distance=2.2mm, every node/.append style={text width=58mm}]
         \node[io] (i) {\texttt{in.cnf} + projection set};
-        \node[sA, below=of i] (a) {\textbf{1. S-set minimisation} (Padoa)};
+        \node[sB, below=of i] (a) {\textbf{1. S-set minimisation} (Padoa)};
         \node[sB, below=of a] (b) {\textbf{2. Puura}: SCC, BVE, distill, subsume,\\ probe, oracle vivify/sparsify, backbone};
         \node[sB, below=of b] (c) {\textbf{3. Autarky}, Puura pass 2};
-        \node[sC, below=of c, draw=newc, fill=newc!12] (d) {\textcolor{newc}{\textbf{4. 2QBF cover-drop}}};
-        \node[sC, below=of d] (e) {\textbf{5. SBVA}, extend the D-set};
+        \node[sB, below=of c] (d) {\textbf{4. 2QBF cover-drop}};
+        \node[sB, below=of d] (e) {\textbf{5. SBVA}, extend the D-set};
         \node[io, below=of e] (o) {\texttt{simplified.cnf} + \texttt{show}/\texttt{optshow}};
         \foreach \x/\y in {i/a,a/b,b/c,c/d,d/e,e/o} \draw[fl] (\x) -- (\y);
       \end{tikzpicture}
@@ -660,7 +659,6 @@
 
 
 % =========================================================================
-\section{Tree decomposition}
 
 % figs/td/*.pdf are generated: cd figs/td && ./make_td.py (runs ../treedecomp on td-example.cnf)
 \begin{frame}[fragile]{Tree decomposition: an example}
@@ -738,7 +736,6 @@
 \end{frame}
 
 % =========================================================================
-\section{Dynamic BCE}
 
 \begin{frame}{Dynamic blocked clause elimination}
   \small
@@ -828,7 +825,7 @@
 \end{frame}
 
 % =========================================================================
-\section{Fields}
+\section{Fields and results}
 
 \begin{frame}{Counting over any field}
   \begin{columns}[T]
@@ -869,7 +866,6 @@
 \end{frame}
 
 % =========================================================================
-\section{Results}
 
 % figs/*-versions.pdf, figs/cav-solvers.pdf are generated: cd figs && ./make_figs.py
 \begin{frame}{Results at CAV'25: from Ganak to Ganak2}
