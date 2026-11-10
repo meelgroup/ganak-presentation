@@ -174,11 +174,10 @@
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
       \small
-      The search trace \emph{is} a d-DNNF\footnote{\scriptsize Darwiche \& Marquis, 2002}:
+      The search trace \emph{is} a d-DNNF\footnotemark:
       decision nodes are \textbf{OR} nodes, component splits are
       \textbf{AND} nodes. \ganak{} can write it out in the
-      d4 \texttt{.nnf} format\footnote{\scriptsize Lagniez \& Marquis,
-      \emph{An Improved Decision-DNNF Compiler}, IJCAI 2017} for repeated
+      d4 \texttt{.nnf} format\footnotemark{} for repeated
       queries, enumeration, or synthesis.
     \end{column}
     \begin{column}{0.48\textwidth}
@@ -187,6 +186,10 @@
       \textbf{multiply}, so any field works.
     \end{column}
   \end{columns}
+  \addtocounter{footnote}{-1}
+  \footnotetext{\scriptsize Darwiche \& Marquis, \emph{A Knowledge Compilation Map}, JAIR 2002}
+  \stepcounter{footnote}
+  \footnotetext{\scriptsize Lagniez \& Marquis, \emph{An Improved Decision-DNNF Compiler}, IJCAI 2017}
 \end{frame}
 
 \begin{frame}{The search: branching and component decomposition}
