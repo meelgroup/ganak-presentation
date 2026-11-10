@@ -61,6 +61,16 @@
   minimum height=7mm, font=\normalsize, inner sep=1pt] at (#1) {$#2$\,@#3};}
 \newcommand{\tdec}[4]{\node[draw=#4!80!black, fill=#4!25, line width=1.3pt, minimum width=11mm,
   minimum height=7mm, font=\normalsize, inner sep=1pt] at (#1) {$#2$\,@#3};}
+\newcommand{\satcall}[3]{%
+  \begin{scope}[shift={(#1)}]
+    \draw[rounded corners=3pt, draw=ioBox, fill=ioBox!8, semithick] (-0.7,-0.55) rectangle (0.7,0.55);
+    \draw[ioBox!80, thin] (0,0.32) -- (-0.32,0.04) (0,0.32) -- (0.3,0.04)
+      (0.3,0.04) -- (0.12,-0.28) (0.3,0.04) -- (0.48,-0.28);
+    \foreach \q in {(0,0.32),(-0.32,0.04),(0.3,0.04),(0.12,-0.28)} \fill[ioBox] \q circle (1.4pt);
+    \node[text=hl, font=\scriptsize\bfseries, inner sep=0pt] at (0.48,-0.3) {$\times$};
+    \draw[hl, thin, ->, >=latex] (0.5,-0.18) to[bend right=55] (0.1,0.38);
+    \node[text=#3, anchor=north] at (0,-0.62) {\usebeamerfont{normal text}\textsf{\textbf{#2}}};
+  \end{scope}}
 \def\checkmark{\tikz\fill[scale=0.2](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
 \algnotext{EndWhile}
 \algnotext{EndFor}
@@ -240,6 +250,7 @@
   \end{columns}
 \end{frame}
 
+% figs/mermaid/*.pdf are generated: edit the .mmd, then cd figs/mermaid && ./render.sh (not mmdc directly)
 \begin{frame}{The main loop}
   \centering
   \includegraphics[width=\linewidth]{figs/mermaid/main-loop.pdf}
@@ -353,35 +364,37 @@
 
 \begin{frame}{S-set and calling a SAT solver}
   \begin{columns}[c]
-    \begin{column}{0.42\textwidth}
+    \begin{column}{0.38\textwidth}
       \small
       Once all variables of the \textbf{S-set} $S$ (an independent support
-      of the projection) are decided,
-      there is \textbf{at most one} solution left: call a SAT solver on
-      the residual formula.
+      of the projection) are decided, there is \textbf{at most one}
+      solution left
       \bigskip
 
-      $V=\{x_1, x_2, x_3, x_4, \ldots \}$, \quad $S=\{x_1, x_2\}$
+      So call a \textbf{SAT solver} on the residual formula: it answers
+      1 or 0. No more branching, components or cache below that point
       \bigskip
 
-      Exploited before by \gpmc{}.
+      $S=\{x_1, x_2\}$. Exploited before by \gpmc{}.
     \end{column}
-    \begin{column}{0.58\textwidth}
+    \begin{column}{0.60\textwidth}
       \centering
-      \scalebox{0.85}{
-      \begin{tikzpicture}[tree, level distance=1.8cm,
-          level 1/.style={sibling distance=4.5cm},
-          level 2/.style={sibling distance=2.4cm}]
-        \node[fill=white] {lev 0}
-          child { node[fill=white] {lev 1}
-            child { node[sat] {SAT} edge from parent node[el] {$x_2=1$} }
-            child { node[sat] {SAT} edge from parent node[el] {$x_2=0$} }
-            edge from parent node[el] {$x_1=0$} }
-          child { node[fill=white] {lev 1}
-            child { node[sat] {SAT} edge from parent node[el] {$x_2=1$} }
-            child { node[fill=hl!40, minimum size=0.3cm] {UNSAT} edge from parent node[el] {$x_2=0$} }
-            edge from parent node[el] {$x_1=1$} };
-      \end{tikzpicture}}
+      \begin{tikzpicture}[x=1cm, y=1cm]
+        \node[lev] (r) at (0,0)     {$x_1$};
+        \node[lev] (a) at (-1.8,-1.3) {$x_2$};
+        \node[lev] (b) at (1.8,-1.3)  {$x_2$};
+        \draw[fl] (r) -- (a) node[lbl, midway, above left]  {$x_1=0$};
+        \draw[fl] (r) -- (b) node[lbl, midway, above right] {$x_1=1$};
+        \foreach \p/\x/\l in {a/-2.7/{x_2=0}, a/-0.9/{x_2=1}, b/0.9/{x_2=0}, b/2.7/{x_2=1}}
+          \draw[fl] (\p) -- (\x,-2.65) node[lbl, pos=0.35, fill=white] {$\l$};
+        \draw[dashed, ioBox] (-3.5,-2.4) -- (3.5,-2.4);
+        \node[lbl, text=ioBox, anchor=west, align=left] at (3.55,-2.4) {all of $S$\\decided};
+        \satcall{-2.7,-3.2}{1}{black}
+        \satcall{-0.9,-3.2}{1}{black}
+        \satcall{0.9,-3.2}{0}{hl}
+        \satcall{2.7,-3.2}{1}{black}
+        \node[font=\small] at (0,-4.6) {count $= 1 + 1 + 0 + 1 = 3$};
+      \end{tikzpicture}
     \end{column}
   \end{columns}
 \end{frame}
@@ -688,6 +701,7 @@
 % =========================================================================
 \section{Results}
 
+% figs/*-versions.pdf, figs/cav-solvers.pdf are generated: cd figs && ./make_figs.py
 \begin{frame}{Results at CAV'25: from Ganak to Ganak2}
   \centering
   \includegraphics[width=0.95\linewidth]{figs/cav-versions.pdf}\\
