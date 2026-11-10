@@ -1,6 +1,6 @@
 flowchart LR
   A{{"component left<br/>at this level?"}}
-  A -->|"not split<br/>yet"| B["split into<br/>components;<br/>cache hits: multiply in,<br/>misses: push"]
+  A -->|"not split<br/>yet"| B["split into<br/>components"]
   B --> A
   A -->|yes| H([descend])
   A -->|"none left"| J["backtrack:<br/>branch₀ + branch₁"]
