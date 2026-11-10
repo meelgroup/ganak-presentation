@@ -40,6 +40,7 @@
   br/.style   ={decorate, decoration={brace, amplitude=4pt}, thick, draw=ioBox},
   lab/.style  ={font=\scriptsize\bfseries},
   role/.style ={font=\scriptsize, align=center, text width=#1, anchor=north},
+  rlab/.style ={anchor=east, font=\small\bfseries},
   bad/.style  ={fill=stageC!50, minimum size=0.3cm},
 }
 
@@ -47,6 +48,10 @@
 \newcommand{\arjun}{\textsf{Arjun}}
 \newcommand{\dfour}{\textsf{d4}}
 \newcommand{\gpmc}{\textsf{gpmc}}
+\newcommand{\tlit}[4]{\node[draw=#4!80!black, fill=#4!25, minimum width=9mm,
+  minimum height=6mm, font=\small, inner sep=1pt] at (#1) {$#2$\,{\tiny @#3}};}
+\newcommand{\tdec}[4]{\node[draw=#4!80!black, fill=#4!25, line width=1.3pt, minimum width=9mm,
+  minimum height=6mm, font=\small, inner sep=1pt] at (#1) {$#2$\,{\tiny @#3}};}
 \def\checkmark{\tikz\fill[scale=0.2](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
 \algnotext{EndWhile}
 \algnotext{EndFor}
@@ -447,26 +452,55 @@
 \end{frame}
 
 \begin{frame}{Chronological backtracking}
-  \begin{columns}[c]
-    \begin{column}{0.45\textwidth}
-      \small
-      \begin{itemize}
-        \item Backjumping throws away counted solutions, so counters
-          backtrack one level, and drop the learnt clause if it would
-          break the propagation invariants
-        \item \textbf{ChronoBT} relaxes the invariants: implication levels
-          may be out of order on the trail
-        \item So we can \textbf{keep} the learnt clause, and force the
-          literal it implies
-        \item Fuzzed with \texttt{SharpVelvet} (Latour et al.)
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.55\textwidth}
-      \centering
-      \includegraphics[width=0.95\linewidth]{chronoBT.png}\\
-      \scriptsize Figure from Nadel \& Ryvchin, \emph{Chronological Backtracking}, SAT 2018
-    \end{column}
-  \end{columns}
+  \begin{itemize}
+    \item Backjumping throws away counted solutions, so counters
+      backtrack one level, and drop the learnt clause if it would
+      break the propagation invariants
+    \item \textbf{ChronoBT}\footnote{\scriptsize Nadel \& Ryvchin,
+      \emph{Chronological Backtracking}, SAT 2018} relaxes the invariants:
+      implication levels may be \textbf{out of order} on the trail
+    \item So we can \textbf{keep} the learnt clause, and force the
+      literal it implies, \textbf{without} undoing the levels in between
+    \item Fuzzed with \texttt{SharpVelvet} (Latour et al.)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Chronological backtracking: an example}
+  \centering
+  \begin{tikzpicture}[x=11mm, y=10mm]
+    \node[rlab] at (-0.6,0)    {at the conflict};
+    \node[rlab] at (-0.6,-1.4) {backjump};
+    \node[rlab] at (-0.6,-2.8) {ChronoBT};
+
+    \tdec{0,0}{x_1}{1}{stageA} \tlit{1,0}{a}{1}{stageA}
+    \tdec{2.2,0}{x_2}{2}{stageB} \tlit{3.2,0}{c}{2}{stageB}
+    \tdec{4.4,0}{x_3}{3}{stageC} \tlit{5.4,0}{\neg b}{3}{stageC}
+    \node[font=\large, text=hl] at (6.2,0) {\Lightning};
+    \node[anchor=west, font=\scriptsize, align=left] at (6.5,0)
+      {learn $(\neg a \lor b)$:\\ $b$ is implied at level 1};
+
+    \tdec{0,-1.4}{x_1}{1}{stageA} \tlit{1,-1.4}{a}{1}{stageA}
+    \tlit{2.2,-1.4}{b}{1}{stageA}
+    \node[anchor=west, font=\scriptsize, align=left, text=hl] at (3.0,-1.4)
+      {levels 2 and 3 undone:\\ the work at level 2 is lost};
+
+    \tdec{0,-2.8}{x_1}{1}{stageA} \tlit{1,-2.8}{a}{1}{stageA}
+    \tdec{2.2,-2.8}{x_2}{2}{stageB} \tlit{3.2,-2.8}{c}{2}{stageB}
+    \tlit{4.4,-2.8}{b}{1}{stageA}
+    \draw[hl, very thick, rounded corners=2pt] (3.95,-3.12) rectangle (4.85,-2.48);
+    \node[anchor=west, font=\scriptsize, align=left, text=stageB!70!black] at (5.1,-2.8)
+      {only level 3 undone; $b$ keeps level 1\\ but sits above level 2: \textbf{out of order}};
+  \end{tikzpicture}
+
+  \bigskip
+  \raggedright\small
+  \begin{itemize}
+    \item Boxes: trail literals with their decision level; thick border = decision
+    \item In a counter, level 2 may already hold counted branches and
+      components: ChronoBT keeps them
+    \item The price: counts computed before $b$ was known need care
+      (next slides)
+  \end{itemize}
 \end{frame}
 
 \begin{frame}{ChronoBT needs compensating weights}
