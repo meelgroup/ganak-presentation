@@ -381,19 +381,18 @@
       \centering
       \begin{tikzpicture}[x=1cm, y=1cm]
         \node[lev] (r) at (0,0)     {$x_1$};
-        \node[lev] (a) at (-1.8,-1.3) {$x_2$};
         \node[lev] (b) at (1.8,-1.3)  {$x_2$};
-        \draw[fl] (r) -- (a) node[lbl, midway, above left]  {$x_1=0$};
+        \draw[fl] (r) -- (-1.8,-2.65) node[lbl, midway, above left, align=right]
+          {$x_1=0$,\\ propagates $x_2=0$};
         \draw[fl] (r) -- (b) node[lbl, midway, above right] {$x_1=1$};
-        \foreach \p/\x/\l in {a/-2.7/{x_2=0}, a/-0.9/{x_2=1}, b/0.9/{x_2=0}, b/2.7/{x_2=1}}
-          \draw[fl] (\p) -- (\x,-2.65) node[lbl, pos=0.35, fill=white] {$\l$};
+        \foreach \x/\l in {0.9/{x_2=0}, 2.7/{x_2=1}}
+          \draw[fl] (b) -- (\x,-2.65) node[lbl, pos=0.35, fill=white] {$\l$};
         \draw[dashed, ioBox] (-3.5,-2.4) -- (3.5,-2.4);
         \node[lbl, text=ioBox, anchor=west, align=left] at (3.55,-2.4) {all of $S$\\decided};
-        \satcall{-2.7,-3.2}{1}{black}
-        \satcall{-0.9,-3.2}{1}{black}
+        \satcall{-1.8,-3.2}{1}{black}
         \satcall{0.9,-3.2}{0}{hl}
         \satcall{2.7,-3.2}{1}{black}
-        \node[font=\small] at (0,-4.6) {count $= 1 + 1 + 0 + 1 = 3$};
+        \node[font=\small] at (0,-4.6) {count $= 1 + 0 + 1 = 2$};
       \end{tikzpicture}
     \end{column}
   \end{columns}
