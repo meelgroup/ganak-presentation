@@ -2,7 +2,7 @@
   "theme": "neutral",
   "themeVariables": {
     "fontSize": "28px",
-    "fontFamily": "Helvetica, Arial, sans-serif"
+    "fontFamily": "Latin Modern Sans, Helvetica, Arial, sans-serif"
   },
   "flowchart": {
     "wrappingWidth": 300,
