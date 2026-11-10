@@ -47,7 +47,6 @@
 \newcommand{\arjun}{\textsf{Arjun}}
 \newcommand{\dfour}{\textsf{d4}}
 \newcommand{\gpmc}{\textsf{gpmc}}
-\newcommand{\new}{\textcolor{newc}{\scriptsize\textbf{NEW}}\ }
 \def\checkmark{\tikz\fill[scale=0.2](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
 \algnotext{EndWhile}
 \algnotext{EndFor}
@@ -540,7 +539,7 @@
   \end{columns}
 \end{frame}
 
-\begin{frame}{\new Dynamic blocked clause elimination}
+\begin{frame}{Dynamic blocked clause elimination}
   \begin{columns}[T]
     \begin{column}{0.56\textwidth}
       \small
@@ -577,14 +576,14 @@
 % =========================================================================
 \section{Tree decomposition}
 
-\begin{frame}{\new Tree decomposition guides branching}
+\begin{frame}{Tree decomposition guides branching}
   \begin{columns}[T]
     \begin{column}{0.56\textwidth}
       \small
       Build a TD of the primal graph (FlowCutter, as in SharpSAT-TD\footnote{\scriptsize Korhonen \& J\"arvisalo, CP'21}).
       A variable's TD score is its bag's distance from the centroid bag:
       \[ \mathit{score}(v) = \tfrac{\mathit{act}(v)}{3} + w_{TD}\cdot \mathit{td}(v) + \tfrac{\mathit{freq}(v)}{25} \]
-      What is new:
+      Recent changes:
       \begin{itemize}
         \item \textbf{TD selection}: several candidate TDs (min-degree
           restarts on random relabellings, FlowCutter); the narrowest wins
@@ -694,7 +693,7 @@
 
 \appendix
 
-\begin{frame}{\new 2QBF cover-drop: removing what cannot matter}
+\begin{frame}{2QBF cover-drop: removing what cannot matter}
   \begin{columns}[T]
     \begin{column}{0.56\textwidth}
       \small
