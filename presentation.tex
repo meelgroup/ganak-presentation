@@ -48,10 +48,10 @@
 \newcommand{\arjun}{\textsf{Arjun}}
 \newcommand{\dfour}{\textsf{d4}}
 \newcommand{\gpmc}{\textsf{gpmc}}
-\newcommand{\tlit}[4]{\node[draw=#4!80!black, fill=#4!25, minimum width=9mm,
-  minimum height=6mm, font=\small, inner sep=1pt] at (#1) {$#2$\,{\tiny @#3}};}
-\newcommand{\tdec}[4]{\node[draw=#4!80!black, fill=#4!25, line width=1.3pt, minimum width=9mm,
-  minimum height=6mm, font=\small, inner sep=1pt] at (#1) {$#2$\,{\tiny @#3}};}
+\newcommand{\tlit}[4]{\node[draw=#4!80!black, fill=#4!25, minimum width=11mm,
+  minimum height=7mm, font=\normalsize, inner sep=1pt] at (#1) {$#2$\,@#3};}
+\newcommand{\tdec}[4]{\node[draw=#4!80!black, fill=#4!25, line width=1.3pt, minimum width=11mm,
+  minimum height=7mm, font=\normalsize, inner sep=1pt] at (#1) {$#2$\,@#3};}
 \def\checkmark{\tikz\fill[scale=0.2](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;}
 \algnotext{EndWhile}
 \algnotext{EndFor}
@@ -467,7 +467,7 @@
 
 \begin{frame}{Chronological backtracking: an example}
   \centering
-  \begin{tikzpicture}[x=11mm, y=10mm]
+  \begin{tikzpicture}[x=13.5mm, y=10mm]
     \node[rlab] at (-0.6,0)    {at the conflict};
     \node[rlab] at (-0.6,-1.4) {backjump};
     \node[rlab] at (-0.6,-2.8) {ChronoBT};
@@ -487,7 +487,7 @@
     \tdec{0,-2.8}{x_1}{1}{stageA} \tlit{1,-2.8}{x_2}{1}{stageA}
     \tdec{2.2,-2.8}{x_3}{2}{stageB} \tlit{3.2,-2.8}{x_4}{2}{stageB}
     \tlit{4.4,-2.8}{x_6}{1}{stageA}
-    \draw[hl, very thick, rounded corners=2pt] (3.95,-3.12) rectangle (4.85,-2.48);
+    \draw[hl, very thick, rounded corners=2pt] (3.96,-3.17) rectangle (4.84,-2.43);
     \node[anchor=west, font=\scriptsize, align=left, text=stageB!70!black] at (5.1,-2.8)
       {only level 3 undone; $x_6$ keeps level 1\\ but sits above level 2: \textbf{out of order}};
   \end{tikzpicture}
