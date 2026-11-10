@@ -215,6 +215,109 @@
   \footnotetext{\scriptsize Lagniez \& Marquis, \emph{An Improved Decision-DNNF Compiler}, IJCAI 2017}
 \end{frame}
 
+% =========================================================================
+\section{Preprocessing}
+
+\begin{frame}{Dual independent set}
+  \begin{definition}[Dual independent set]
+    For a formula $F$ over $V$ with projection set $\mathcal{P}$:
+    \begin{enumerate}
+      \item \textbf{S-set} $S\subseteq \mathcal{P}$: once all of $S$ is
+        decided, we may switch to SAT mode.
+      \item \textbf{D-set} $D\supseteq \mathcal{P}$: the variables we may
+        branch on.
+    \end{enumerate}
+    Traditionally $D = S \subseteq \mathcal{P}$. We aim for
+    $S \subseteq \mathcal{P} \subseteq D$: a \emph{small} $S$ to reach SAT
+    mode early, a \emph{large} $D$ to split into components well.
+  \end{definition}
+  \vspace{-3mm}
+  \begin{center}
+  \begin{tikzpicture}[x=1cm, y=1cm]
+    \fill[stageA!60]  (0,0)    rectangle (2,0.7);
+    \fill[stageA!25]  (2,0)    rectangle (5,0.7);
+    \fill[stageB!30]  (5,0)    rectangle (8.5,0.7);
+    \fill[ioBox!15]   (8.5,0)  rectangle (13,0.7);
+    \draw[ioBox] (0,0) rectangle (13,0.7);
+    \foreach \x in {2,5,8.5} \draw[white, line width=1.2pt] (\x,0) -- (\x,0.7);
+    \node[font=\small] at (1,0.35)    {$S$};
+    \node[font=\small] at (3.5,0.35)  {$\mathcal{P}\setminus S$};
+    \node[font=\small] at (6.75,0.35) {$D\setminus\mathcal{P}$};
+    \node[font=\small] at (10.75,0.35){$V\setminus D$};
+    \draw[br] (0,0.8)  -- (2,0.8)  node[midway, above=3pt, lab] {S-set};
+    \draw[br] (0,1.4) -- (5,1.4) node[midway, above=3pt, lab] {projection $\mathcal{P}$};
+    \draw[br] (0,2.0)  -- (8.5,2.0) node[midway, above=3pt, lab] {D-set};
+    \node[role=19mm] at (1,-0.08)    {all decided\\$\Rightarrow$ SAT mode};
+    \node[role=28mm] at (3.5,-0.08)  {defined by $S$:\\may branch on};
+    \node[role=33mm] at (6.75,-0.08) {\emph{may} branch on:\\better component splits};
+    \node[role=42mm] at (10.75,-0.08){never branched on: propagated,\\or left to the SAT solver};
+  \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Preprocessing with Arjun}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{\small Small S-set + large D-set}
+        \scriptsize
+        Most variables are \emph{defined} by others (Padoa's theorem:
+        two renamed copies cannot differ if the projection agrees).
+        Arjun shrinks the projection to a small \textbf{S-set}, and grows
+        it to a large \textbf{D-set} the counter \emph{may} branch on.
+      \end{block}
+      \begin{block}{\small Simplified CNF}
+        \scriptsize
+        Fewer variables, fewer and shorter clauses. Every step must be
+        \textbf{count-preserving} for the projection. BVE and
+        equivalent-literal merging do most of the structural work.
+      \end{block}
+      \scriptsize
+      Example \texttt{mc2023\_track3\_079}: 26\,351 vars $\to$ 420,
+      112\,951 clauses $\to$ 2\,504, projection 75 $\to$ 12, in 8.5\,s.
+    \end{column}
+    \begin{column}{0.50\textwidth}
+      \centering
+      \begin{tikzpicture}[node distance=2.2mm, every node/.append style={text width=58mm}]
+        \node[io] (i) {\texttt{in.cnf} + projection set};
+        \node[sA, below=of i] (a) {\textbf{1. S-set minimisation} (Padoa)};
+        \node[sB, below=of a] (b) {\textbf{2. Puura}: SCC, BVE, distill, subsume,\\ probe, oracle vivify/sparsify, backbone};
+        \node[sB, below=of b] (c) {\textbf{3. Autarky}, Puura pass 2};
+        \node[sC, below=of c, draw=newc, fill=newc!12] (d) {\textcolor{newc}{\textbf{4. 2QBF cover-drop}}};
+        \node[sC, below=of d] (e) {\textbf{5. SBVA}, extend the D-set};
+        \node[io, below=of e] (o) {\texttt{simplified.cnf} + \texttt{show}/\texttt{optshow}};
+        \foreach \x/\y in {i/a,a/b,b/c,c/d,d/e,e/o} \draw[fl] (\x) -- (\y);
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Computing a maximal decision set}
+  \small
+  \begin{algorithmic}[1]
+    \State $D \gets \mathcal{P}$, \quad $G \gets \textsc{ExtractGates}(F)$
+    \Procedure{SyntacticExpansion}{$V$}
+      \State $\text{changed} \gets V$
+      \While{changed is not empty}
+        \State $v \gets \text{changed}.pop()$
+        \For{gate $g \in G$ with $v$ as input} if all inputs are in $D$, add $g$'s output to $D$
+        \EndFor
+      \EndWhile
+    \EndProcedure
+    \Procedure{SemanticExpansion}{}
+      \For{$v \notin D$}
+        \If{$\textsc{ValidateDecisionVar}(D \cup \{v\}, F)$} \Comment{SAT call}
+          \State $D \gets D \cup \{v\}$; \ \textsc{SyntacticExpansion}($\{v\}$)
+        \EndIf
+      \EndFor
+    \EndProcedure
+  \end{algorithmic}
+  \medskip
+  Run $\textsc{SyntacticExpansion}(\mathcal{P})$, then $\textsc{SemanticExpansion}$.
+\end{frame}
+
+% =========================================================================
+\section{Search}
+
 \begin{frame}{The search: branching and component decomposition}
   \begin{columns}[c]
     \begin{column}{0.40\textwidth}
@@ -293,48 +396,6 @@
   \end{itemize}
 \end{frame}
 
-% =========================================================================
-\section{Preprocessing}
-
-\begin{frame}{Preprocessing with Arjun}
-  \begin{columns}[T]
-    \begin{column}{0.48\textwidth}
-      \begin{block}{\small Small S-set + large D-set}
-        \scriptsize
-        Most variables are \emph{defined} by others (Padoa's theorem:
-        two renamed copies cannot differ if the projection agrees).
-        Arjun shrinks the projection to a small \textbf{S-set}, and grows
-        it to a large \textbf{D-set} the counter \emph{may} branch on.
-      \end{block}
-      \begin{block}{\small Simplified CNF}
-        \scriptsize
-        Fewer variables, fewer and shorter clauses. Every step must be
-        \textbf{count-preserving} for the projection. BVE and
-        equivalent-literal merging do most of the structural work.
-      \end{block}
-      \scriptsize
-      Example \texttt{mc2023\_track3\_079}: 26\,351 vars $\to$ 420,
-      112\,951 clauses $\to$ 2\,504, projection 75 $\to$ 12, in 8.5\,s.
-    \end{column}
-    \begin{column}{0.50\textwidth}
-      \centering
-      \begin{tikzpicture}[node distance=2.2mm, every node/.append style={text width=58mm}]
-        \node[io] (i) {\texttt{in.cnf} + projection set};
-        \node[sA, below=of i] (a) {\textbf{1. S-set minimisation} (Padoa)};
-        \node[sB, below=of a] (b) {\textbf{2. Puura}: SCC, BVE, distill, subsume,\\ probe, oracle vivify/sparsify, backbone};
-        \node[sB, below=of b] (c) {\textbf{3. Autarky}, Puura pass 2};
-        \node[sC, below=of c, draw=newc, fill=newc!12] (d) {\textcolor{newc}{\textbf{4. 2QBF cover-drop}}};
-        \node[sC, below=of d] (e) {\textbf{5. SBVA}, extend the D-set};
-        \node[io, below=of e] (o) {\texttt{simplified.cnf} + \texttt{show}/\texttt{optshow}};
-        \foreach \x/\y in {i/a,a/b,b/c,c/d,d/e,e/o} \draw[fl] (\x) -- (\y);
-      \end{tikzpicture}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-% =========================================================================
-\section{Search}
-
 \begin{frame}{Probabilistic component caching}
   \begin{columns}[T]
     \begin{column}{0.55\textwidth}
@@ -410,67 +471,6 @@
     \item \textbf{Polarity caching}\footnote{\scriptsize Pipatsrisawat \& Darwiche, 2007}:
       remember the last polarity, so restarts do not throw the work away.
   \end{itemize}
-\end{frame}
-
-\begin{frame}{Dual independent set}
-  \begin{definition}[Dual independent set]
-    For a formula $F$ over $V$ with projection set $\mathcal{P}$:
-    \begin{enumerate}
-      \item \textbf{S-set} $S\subseteq \mathcal{P}$: once all of $S$ is
-        decided, we may switch to SAT mode.
-      \item \textbf{D-set} $D\supseteq \mathcal{P}$: the variables we may
-        branch on.
-    \end{enumerate}
-    Traditionally $D = S \subseteq \mathcal{P}$. We aim for
-    $S \subseteq \mathcal{P} \subseteq D$: a \emph{small} $S$ to reach SAT
-    mode early, a \emph{large} $D$ to split into components well.
-  \end{definition}
-  \vspace{-3mm}
-  \begin{center}
-  \begin{tikzpicture}[x=1cm, y=1cm]
-    \fill[stageA!60]  (0,0)    rectangle (2,0.7);
-    \fill[stageA!25]  (2,0)    rectangle (5,0.7);
-    \fill[stageB!30]  (5,0)    rectangle (8.5,0.7);
-    \fill[ioBox!15]   (8.5,0)  rectangle (13,0.7);
-    \draw[ioBox] (0,0) rectangle (13,0.7);
-    \foreach \x in {2,5,8.5} \draw[white, line width=1.2pt] (\x,0) -- (\x,0.7);
-    \node[font=\small] at (1,0.35)    {$S$};
-    \node[font=\small] at (3.5,0.35)  {$\mathcal{P}\setminus S$};
-    \node[font=\small] at (6.75,0.35) {$D\setminus\mathcal{P}$};
-    \node[font=\small] at (10.75,0.35){$V\setminus D$};
-    \draw[br] (0,0.8)  -- (2,0.8)  node[midway, above=3pt, lab] {S-set};
-    \draw[br] (0,1.4) -- (5,1.4) node[midway, above=3pt, lab] {projection $\mathcal{P}$};
-    \draw[br] (0,2.0)  -- (8.5,2.0) node[midway, above=3pt, lab] {D-set};
-    \node[role=19mm] at (1,-0.08)    {all decided\\$\Rightarrow$ SAT mode};
-    \node[role=28mm] at (3.5,-0.08)  {defined by $S$:\\may branch on};
-    \node[role=33mm] at (6.75,-0.08) {\emph{may} branch on:\\better component splits};
-    \node[role=42mm] at (10.75,-0.08){never branched on: propagated,\\or left to the SAT solver};
-  \end{tikzpicture}
-  \end{center}
-\end{frame}
-
-\begin{frame}{Computing a maximal decision set}
-  \small
-  \begin{algorithmic}[1]
-    \State $D \gets \mathcal{P}$, \quad $G \gets \textsc{ExtractGates}(F)$
-    \Procedure{SyntacticExpansion}{$V$}
-      \State $\text{changed} \gets V$
-      \While{changed is not empty}
-        \State $v \gets \text{changed}.pop()$
-        \For{gate $g \in G$ with $v$ as input} if all inputs are in $D$, add $g$'s output to $D$
-        \EndFor
-      \EndWhile
-    \EndProcedure
-    \Procedure{SemanticExpansion}{}
-      \For{$v \notin D$}
-        \If{$\textsc{ValidateDecisionVar}(D \cup \{v\}, F)$} \Comment{SAT call}
-          \State $D \gets D \cup \{v\}$; \ \textsc{SyntacticExpansion}($\{v\}$)
-        \EndIf
-      \EndFor
-    \EndProcedure
-  \end{algorithmic}
-  \medskip
-  Run $\textsc{SyntacticExpansion}(\mathcal{P})$, then $\textsc{SemanticExpansion}$.
 \end{frame}
 
 \begin{frame}{Chronological backtracking (ChronoBT)}
