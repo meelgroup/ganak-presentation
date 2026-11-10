@@ -1,16 +1,17 @@
 flowchart LR
   F{{"component left<br/>at this level?"}}
   F -->|yes| D["<b>Descend</b><br/>cache lookup;<br/>on a miss: decide<br/>and propagate"]
-  D -->|"no<br/>conflict"| F
-  D -->|conflict| A["analyse<br/>conflict,<br/>learn a clause"]
+  D -->|"<span class='lbl-green'>no<br/>conflict</span>"| F
+  D -->|"<span class='lbl-red'>conflict</span>"| A["analyse<br/>conflict,<br/>learn a clause"]
   F -->|no| U["<b>Ascend</b><br/>add the two branches,<br/>cache, multiply<br/>into parent"]
   A --> U
   U -->|"stack not<br/>empty"| F
   U -->|"stack<br/>empty"| X(["total<br/>count"])
 
-  classDef big fill:#e8eef6,stroke:#4673aa
-  classDef bad fill:#f8e2e2,stroke:#c83c3c
-  classDef term fill:#e6f2e3,stroke:#59a14f
-  class D,U big
-  class A bad
-  class X term
+  %% blue: search, red: conflict, green: counting
+  classDef search fill:#e8eef6,stroke:#4673aa
+  classDef confl fill:#f8e2e2,stroke:#c83c3c
+  classDef count fill:#e6f2e3,stroke:#59a14f
+  class D search
+  class A confl
+  class U,X count

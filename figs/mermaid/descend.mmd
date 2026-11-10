@@ -3,12 +3,15 @@ flowchart LR
   Q -->|no| SAT["SAT solver:<br/>one solution<br/>is enough"]
   Q -->|yes| DEC["decide a var of<br/>this component<br/>(TD + VSIDS<br/>+ frequency)"]
   DEC --> P{{propagate}}
-  P -->|ok| OUT(["next<br/>component"])
-  P -->|conflict| UIP["learn 1-UIP clause,<br/>ChronoBT;<br/>branch counts 0"]
+  P -->|"<span class='lbl-green'>ok</span>"| OUT(["next<br/>component"])
+  P -->|"<span class='lbl-red'>conflict</span>"| UIP["learn 1-UIP clause,<br/>ChronoBT;<br/>branch counts 0"]
   UIP -->|"asserting<br/>literal"| P
   UIP -->|"branch<br/>done"| ASC([ascend])
 
-  classDef s fill:#f8e2e2,stroke:#c83c3c
-  classDef term fill:#e6f2e3,stroke:#59a14f
-  class DEC,SAT,UIP s
-  class OUT,ASC term
+  %% blue: search, red: conflict, green: counting
+  classDef search fill:#e8eef6,stroke:#4673aa
+  classDef confl fill:#f8e2e2,stroke:#c83c3c
+  classDef count fill:#e6f2e3,stroke:#59a14f
+  class DEC,SAT,OUT search
+  class UIP confl
+  class ASC count
