@@ -1,0 +1,14 @@
+graph TD {
+  node [shape=box, fontname="Courier"];
+  b0 [label="bag 0\nsize 4\n{1, 2, 3, 5}"];
+  b1 [label="bag 1\nsize 4\n{5, 7, 8, 9}"];
+  b2 [label="bag 2\nsize 4\n{6, 7, 9, 10}"];
+  b3 [label="bag 3\nsize 4\n{1, 3, 4, 6}"];
+  b4 [label="bag 4\nsize 4\n{5, 6, 7, 9}"];
+  b5 [label="bag 5 (centroid)\nsize 4\n{1, 3, 5, 6}", style=filled, fillcolor="#ffd27a"];
+  b0 -- b5;
+  b1 -- b4;
+  b2 -- b4;
+  b3 -- b5;
+  b4 -- b5;
+}

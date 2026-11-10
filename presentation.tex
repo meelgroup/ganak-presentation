@@ -627,20 +627,62 @@
 % =========================================================================
 \section{Tree decomposition}
 
+% figs/td/*.pdf are generated: cd figs/td && ./make_td.py (runs ../treedecomp on td-example.cnf)
+\begin{frame}[fragile]{Tree decomposition: an example}
+  \small Build a tree decomposition (TD) of the primal graph, with FlowCutter as in
+  SharpSAT-TD\footnote{\scriptsize Korhonen \& J\"arvisalo, CP'21}:
+  \begin{columns}[c]
+    \begin{column}{0.11\textwidth}
+      \footnotesize
+\begin{verbatim}
+ 1  2  5
+-2  3  5
+ 3  4  6
+-1 -4  6
+ 7  8  5
+-8  9  5
+ 9 10  6
+-7 -10 6
+ 5 -6
+\end{verbatim}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \centering
+      \includegraphics[height=4.4cm]{figs/td/primal.pdf}\\
+      \scriptsize primal graph: an edge per pair of vars in a clause
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{figs/td/tree.pdf}\\
+      \scriptsize tree decomposition, width 3
+    \end{column}
+  \end{columns}
+
+  \small
+  \begin{itemize}
+    \item Every clause fits in some bag; the bags holding a variable form a
+      subtree. Width = largest bag $-$ 1
+    \item The \colorbox{stageC!20}{centroid bag $\{1,3,5,6\}$} splits the tree
+      into balanced parts. Decide its variables first: $2$, $4$ and
+      $\{7,8,9,10\}$ end up in different \textbf{components}
+  \end{itemize}
+\end{frame}
+
 \begin{frame}{Tree decomposition guides branching}
   \begin{columns}[T]
     \begin{column}{0.56\textwidth}
       \small
-      Build a TD of the primal graph (FlowCutter, as in SharpSAT-TD\footnote{\scriptsize Korhonen \& J\"arvisalo, CP'21}).
-      The closer a variable's bag is to the centroid bag, the higher its TD score:
+      TD score $\mathit{td}(v)$: the closer $v$'s bag is to the centroid,
+      the higher. In the example: \colorbox{stageC!20}{centroid} 100,
+      \colorbox{stageA!15}{one bag away} 50, \colorbox{ioBox!15}{two away} 0.
+      It is mixed into the branching score:
       \[ \mathit{score}(v) = \tfrac{\mathit{act}(v)}{3} + w_{TD}\cdot \mathit{td}(v) + \tfrac{\mathit{freq}(v)}{25} \]
       Recent changes:
       \begin{itemize}
-        \item \textbf{TD selection}: several candidate TDs (min-degree
-          restarts on random relabellings, FlowCutter); the narrowest wins
+        \item \textbf{TD selection}: local search with a tick-based
+          (i.e.\ deterministic) timeout; the narrowest TD wins
         \item \textbf{Flat rule}: if width $\ge$ 50\% of the nodes, the
           graph is too dense for the TD to say anything: $w_{TD}=0$
-        \item \textbf{Dense rule}: never trade width for a better split
       \end{itemize}
     \end{column}
     \begin{column}{0.42\textwidth}
@@ -648,7 +690,7 @@
         \small
         \begin{itemize}
           \item selection: 1181 $\to$ 1198
-          \item + rules: $\to$ \textbf{1205}\\ (+37, $-13$)
+          \item + flat rule: $\to$ \textbf{1205}\\ (+37, $-13$)
           \item PAR2 2084 $\to$ 1950
           \item commonly solved (1168): 285\,ks $\to$ \textbf{227\,ks} ($-20\%$)
         \end{itemize}

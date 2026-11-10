@@ -9,6 +9,8 @@ Beamer talk on Ganak (`presentation.tex`). Build with `latexmk -pdf presentation
   and applies `config.json`.
 - `figs/{cav-versions,cav-solvers,cav-unproj,new-versions}.pdf` (cactus plots): `cd figs && ./make_figs.py`,
   reads `data/results.sqlite3`.
+- `figs/td/{primal,tree}.pdf` (TD example): `cd figs/td && ./make_td.py`, runs
+  `../treedecomp/build/treedecomp` on `td-example.cnf`.
 
 ## Data
 `data/results.sqlite3` is the run table of the plotted runs. The raw logs under `data/out-*`

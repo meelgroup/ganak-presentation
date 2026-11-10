@@ -1,0 +1,36 @@
+graph P {
+  layout=neato; overlap=false; sep=0.4;
+  node [shape=circle, width=0.6, fixedsize=true, fontname="Latin Modern Sans", fontsize=24];
+  edge [color="#888888"];
+  1 [label="1", style=filled, fillcolor="#fbeedd", color="#e18c2b", penwidth=1.6];
+  2 [label="2", style=filled, fillcolor="#e8eef6", color="#4673aa", penwidth=1.6];
+  3 [label="3", style=filled, fillcolor="#fbeedd", color="#e18c2b", penwidth=1.6];
+  4 [label="4", style=filled, fillcolor="#e8eef6", color="#4673aa", penwidth=1.6];
+  5 [label="5", style=filled, fillcolor="#fbeedd", color="#e18c2b", penwidth=1.6];
+  6 [label="6", style=filled, fillcolor="#fbeedd", color="#e18c2b", penwidth=1.6];
+  7 [label="7", style=filled, fillcolor="#e8eef6", color="#4673aa", penwidth=1.6];
+  8 [label="8", style=filled, fillcolor="#eeeeee", color="#777777", penwidth=1.6];
+  9 [label="9", style=filled, fillcolor="#e8eef6", color="#4673aa", penwidth=1.6];
+  10 [label="10", style=filled, fillcolor="#eeeeee", color="#777777", penwidth=1.6];
+  1 -- 2;
+  1 -- 4;
+  1 -- 5;
+  1 -- 6;
+  2 -- 3;
+  2 -- 5;
+  3 -- 4;
+  3 -- 5;
+  3 -- 6;
+  4 -- 6;
+  5 -- 6;
+  5 -- 7;
+  5 -- 8;
+  5 -- 9;
+  6 -- 7;
+  6 -- 9;
+  6 -- 10;
+  7 -- 8;
+  7 -- 10;
+  8 -- 9;
+  9 -- 10;
+}
