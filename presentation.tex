@@ -41,6 +41,15 @@
   lab/.style  ={font=\scriptsize\bfseries},
   role/.style ={font=\scriptsize, align=center, text width=#1, anchor=north},
   rlab/.style ={anchor=east, font=\small\bfseries},
+  bx/.style   ={rectangle, rounded corners=3pt, font=\small, minimum height=7mm,
+                minimum width=10mm, inner sep=3pt, semithick},
+  lev/.style  ={bx, draw=stageA, fill=stageA!15},
+  leaf/.style ={bx, draw=stageB, fill=stageB!20},
+  comp/.style ={bx, draw=hl, fill=stageC!25, very thick},
+  confl/.style={bx, draw=hl, fill=hl!15},
+  cachebx/.style={bx, draw=stageC, fill=stageC!20},
+  open/.style ={bx, draw=ioBox, fill=ioBox!10},
+  lbl/.style  ={font=\scriptsize, inner sep=1pt},
   bad/.style  ={fill=stageC!50, minimum size=0.3cm},
 }
 
@@ -198,7 +207,7 @@
 
 \begin{frame}{The search: branching and component decomposition}
   \begin{columns}[c]
-    \begin{column}{0.45\textwidth}
+    \begin{column}{0.40\textwidth}
       \small
       \begin{itemize}
         \item Branch on a variable: the count is the \textbf{sum} of the two branches
@@ -209,24 +218,24 @@
         \item Conflicts: learn clauses, as in CDCL
       \end{itemize}
     \end{column}
-    \begin{column}{0.55\textwidth}
+    \begin{column}{0.58\textwidth}
       \centering
-      \resizebox{\linewidth}{!}{
-      \begin{tikzpicture}[tree, level 1/.style={sibling distance=5cm}]
-        \node[fill=stageB!25] {CNF}
-          child { node[fill=white] {$\ldots$}
-                  edge from parent node[el] {$x_1=0$} }
-          child { node[fill=stageC!20, minimum width=3.4cm, minimum height=0.7cm] (box) {AND}
-                  edge from parent node[el] {$x_1=1$} };
-        \node[dot] (d1) at ([xshift=-1.2cm]box.center) {};
-        \node[dot] (d2) at ([xshift=1.2cm]box.center) {};
-        \node[draw] (a) at ([yshift=-1.5cm, xshift=-1.9cm]d1) {$\ldots$};
-        \node[draw] (b) at ([yshift=-1.5cm, xshift=0.5cm]d1) {$\ldots$};
-        \node[draw, fill=stageA!20] (c) at ([yshift=-1.5cm, xshift=0.9cm]d2) {cache hit};
-        \draw[thick] (d1) -- (a) node[midway, el] {$x_3=0$};
-        \draw[thick] (d1) -- (b) node[midway, el] {$x_3=1$};
-        \draw[thick] (d2) -- (c);
-      \end{tikzpicture}}
+      \begin{tikzpicture}[x=1cm, y=1cm]
+        \node[lev] (r) at (0,0) {CNF};
+        \node[open] (L) at (-2.2,-1.5) {$\ldots$};
+        \node[lev, minimum width=42mm] (and) at (2.0,-1.5) {comp A \quad $\times$ \quad comp B};
+        \draw[fl] (r) -- (L) node[lbl, midway, above left] {$x_1=0$};
+        \draw[fl] (r) -- (and) node[lbl, midway, above right] {$x_1=1$};
+        \coordinate (cA) at ([xshift=-13mm]and.south);
+        \coordinate (cB) at ([xshift=13mm]and.south);
+        \node[open] (a) at (-0.1,-3.2) {$\ldots$};
+        \node[open] (b) at (1.5,-3.2) {$\ldots$};
+        \node[cachebx] (c) at (3.3,-3.2) {cache hit};
+        \draw[fl] (cA) -- (a) node[lbl, midway, left] {$x_3=0$};
+        \draw[fl] (cA) -- (b) node[lbl, midway, right] {$x_3=1$};
+        \draw[fl] (cB) -- (c);
+        \node[lbl, text=stageA!80!black, right=2mm of r] {count $=$ left $+$ right};
+      \end{tikzpicture}
     \end{column}
   \end{columns}
 \end{frame}
@@ -511,14 +520,7 @@
     \end{column}
     \begin{column}{0.51\textwidth}
       \centering
-      \begin{tikzpicture}[x=1cm, y=1cm,
-          bx/.style={rectangle, rounded corners=3pt, font=\small, minimum height=7mm,
-                     minimum width=10mm, inner sep=3pt, semithick},
-          lev/.style={bx, draw=stageA, fill=stageA!15},
-          leaf/.style={bx, draw=stageB, fill=stageB!20},
-          comp/.style={bx, draw=hl, fill=stageC!25, very thick},
-          confl/.style={bx, draw=hl, fill=hl!15},
-          lbl/.style={font=\scriptsize, inner sep=1pt}]
+      \begin{tikzpicture}[x=1cm, y=1cm]
         \node[lev]   (l0) at (0,0)      {lev 1};
         \node[lev]   (l1) at (1.6,-1.4) {lev 2};
         \node[confl] (l3) at (3.2,-2.8) {lev 3 \Lightning};
@@ -552,14 +554,7 @@
     \end{column}
     \begin{column}{0.58\textwidth}
       \centering
-      \begin{tikzpicture}[x=1cm, y=1cm,
-          bx/.style={rectangle, rounded corners=3pt, font=\small, minimum height=7mm,
-                     minimum width=10mm, inner sep=3pt, semithick},
-          lev/.style={bx, draw=stageA, fill=stageA!15},
-          leaf/.style={bx, draw=stageB, fill=stageB!20},
-          comp/.style={bx, draw=hl, fill=stageC!25, very thick},
-          confl/.style={bx, draw=hl, fill=hl!15},
-          lbl/.style={font=\scriptsize, inner sep=1pt}]
+      \begin{tikzpicture}[x=1cm, y=1cm]
         \node[lev] (l0) at (0,0) {lev 1};
         \node[lev] (lL) at (-2.5,-1.4) {lev 2};
         \node[lev, minimum width=42mm] (and) at (2.0,-1.4) {comp A \quad AND \quad comp B};
