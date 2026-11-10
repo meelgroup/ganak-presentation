@@ -164,6 +164,9 @@
     \draw[fl] (in) -- (arjun);
     \draw[fl] (arjun) -- (td);
     \draw[fl] (td) -- (search);
+    \node[io, left=22mm of search, text width=30mm] (nnf)
+      {d-DNNF circuit\\{\scriptsize d4 \texttt{.nnf} file}};
+    \draw[fl] (search) -- node[above, font=\scriptsize] {\texttt{--compile}} (nnf);
   \end{tikzpicture}
   \end{center}
 
@@ -173,8 +176,10 @@
       \small
       The search trace \emph{is} a d-DNNF\footnote{\scriptsize Darwiche \& Marquis, 2002}:
       decision nodes are \textbf{OR} nodes, component splits are
-      \textbf{AND} nodes. \ganak{} can also write it out
-      (\texttt{--compile out.nnf}).
+      \textbf{AND} nodes. \ganak{} can write it out in the
+      d4 \texttt{.nnf} format\footnote{\scriptsize Lagniez \& Marquis,
+      \emph{An Improved Decision-DNNF Compiler}, IJCAI 2017} for repeated
+      queries, enumeration, or synthesis.
     \end{column}
     \begin{column}{0.48\textwidth}
       \small
