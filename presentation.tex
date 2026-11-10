@@ -452,20 +452,6 @@
 \end{frame}
 
 \begin{frame}{Chronological backtracking}
-  \begin{itemize}
-    \item Backjumping throws away counted solutions, so counters
-      backtrack one level, and drop the learnt clause if it would
-      break the propagation invariants
-    \item \textbf{ChronoBT}\footnote{\scriptsize Nadel \& Ryvchin,
-      \emph{Chronological Backtracking}, SAT 2018} relaxes the invariants:
-      implication levels may be \textbf{out of order} on the trail
-    \item So we can \textbf{keep} the learnt clause, and force the
-      literal it implies, \textbf{without} undoing the levels in between
-    \item Fuzzed with \texttt{SharpVelvet} (Latour et al.)
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Chronological backtracking: an example}
   \centering
   \begin{tikzpicture}[x=13.5mm, y=10mm]
     \node[rlab] at (-0.6,0)    {at the conflict};
@@ -492,14 +478,17 @@
       {only level 3 undone; $x_6$ keeps level 1\\ but sits above level 2: \textbf{out of order}};
   \end{tikzpicture}
 
-  \bigskip
+  \medskip
   \raggedright\small
   \begin{itemize}
-    \item Boxes: trail literals with their decision level; thick border = decision
-    \item In a counter, level 2 may already hold counted branches and
-      components: ChronoBT keeps them
-    \item The price: counts computed before $x_6$ was known need care
-      (next slides)
+    \item Backjumping throws away counted solutions, so counters
+      backtrack one level, and drop the learnt clause if it would
+      break the propagation invariants
+    \item \textbf{ChronoBT}\footnote{\scriptsize Nadel \& Ryvchin,
+      \emph{Chronological Backtracking}, SAT 2018} relaxes the invariants:
+      implication levels may be \textbf{out of order} on the trail
+    \item So we can \textbf{keep} the learnt clause, and force the
+      literal it implies, \textbf{without} undoing the levels in between
   \end{itemize}
 \end{frame}
 
