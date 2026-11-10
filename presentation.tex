@@ -451,7 +451,7 @@
   Run $\textsc{SyntacticExpansion}(\mathcal{P})$, then $\textsc{SemanticExpansion}$.
 \end{frame}
 
-\begin{frame}{Chronological backtracking}
+\begin{frame}{Chronological backtracking (ChronoBT)}
   \centering
   \begin{tikzpicture}[x=13.5mm, y=10mm]
     \node[rlab] at (-0.6,0)    {at the conflict};
@@ -481,10 +481,10 @@
   \medskip
   \raggedright\small
   \begin{itemize}
-    \item \alert{Backjumping throws away counted solutions}, so counters
+    \item \textbf{Backjumping throws away counted solutions}, so counters
       backtrack one level, and drop the learnt clause if it would
       break the propagation invariants
-    \item \textbf{Chronological backtracking (ChronoBT)}\footnote{\scriptsize Nadel \& Ryvchin,
+    \item \textbf{ChronoBT}\footnote{\scriptsize Nadel \& Ryvchin,
       \emph{Chronological Backtracking}, SAT 2018} relaxes the invariants:
       implication levels may be \textbf{out of order} on the trail
     \item \textbf{Keep} the learnt clause, and force the
