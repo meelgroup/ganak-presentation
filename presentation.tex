@@ -10,7 +10,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,backgrounds,decorations.pathreplacing}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,backgrounds,decorations.pathreplacing,calc}
 \usepackage{marvosym}
 
 \definecolor{stageA}{RGB}{ 70,115,170}
@@ -539,7 +539,7 @@
 
 \begin{frame}{Compensating across components}
   \begin{columns}[c]
-    \begin{column}{0.45\textwidth}
+    \begin{column}{0.40\textwidth}
       \small
       \begin{enumerate}
         \item $x_4$ is in the components of nodes 1--4, but not 5. Yet at 5
@@ -551,27 +551,36 @@
         \item The \emph{sibling} components must be compensated too
       \end{enumerate}
     \end{column}
-    \begin{column}{0.55\textwidth}
+    \begin{column}{0.58\textwidth}
       \centering
-      \scalebox{0.85}{
-      \begin{tikzpicture}[tree, level 1/.style={sibling distance=5cm},
-          level 2/.style={sibling distance=2.4cm}]
-        \node[fill=white] {lev 0}
-          child { node[fill=white] {lev 1}
-            child { node[sat] {$\checkmark 1$} edge from parent node[el] {$x_2=1$} }
-            child { node[sat] {$\checkmark 2$} edge from parent node[el] {$x_2=0$} }
-            edge from parent node[el] {$x_1=0$} }
-          child { node[fill=white, minimum width=3cm] (box) {lev 1}
-            edge from parent node[el] {$x_1=1$} };
-        \node[dot] (d1) at ([xshift=-1cm]box.center) {};
-        \node[dot] (d2) at ([xshift=1cm]box.center) {};
-        \node[sat] (a) at ([yshift=-1.5cm, xshift=-1.3cm]d1) {$\checkmark 3$};
-        \node[sat] (b) at ([yshift=-1.5cm, xshift=0.6cm]d1) {$\checkmark 4$};
-        \node[bad] (c) at ([yshift=-1.5cm, xshift=1.2cm]d2) {5 \Lightning};
-        \draw[thick] (d1) -- (a) node[midway, el] {$x_3=0$};
-        \draw[thick] (d1) -- (b) node[midway, el] {$x_3=1$};
-        \draw[thick] (d2) -- (c) node[midway, el] {$x_2=1$};
-      \end{tikzpicture}}
+      \begin{tikzpicture}[x=1cm, y=1cm,
+          bx/.style={rectangle, rounded corners=3pt, font=\small, minimum height=7mm,
+                     minimum width=10mm, inner sep=3pt, semithick},
+          lev/.style={bx, draw=stageA, fill=stageA!15},
+          leaf/.style={bx, draw=stageB, fill=stageB!20},
+          comp/.style={bx, draw=hl, fill=stageC!25, very thick},
+          confl/.style={bx, draw=hl, fill=hl!15},
+          lbl/.style={font=\scriptsize, inner sep=1pt}]
+        \node[lev] (l0) at (0,0) {lev 0};
+        \node[lev] (lL) at (-2.5,-1.4) {lev 1};
+        \node[lev, minimum width=42mm] (and) at (2.0,-1.4) {comp A \quad AND \quad comp B};
+        \node[leaf]  (n1) at (-3.4,-3.1) {node 1};
+        \node[leaf]  (n2) at (-1.6,-3.1) {node 2};
+        \node[comp]  (n3) at (-0.1,-3.1) {node 3};
+        \node[comp]  (n4) at (1.5,-3.1)  {node 4};
+        \node[confl] (n5) at (3.4,-3.1)  {node 5 \Lightning};
+        \draw[fl] (l0) -- (lL) node[lbl, midway, above left] {$x_1=0$};
+        \draw[fl] (l0) -- (and) node[lbl, midway, above right] {$x_1=1$};
+        \draw[fl] (lL) -- (n1) node[lbl, midway, left] {$x_2=1$};
+        \draw[fl] (lL) -- (n2) node[lbl, midway, right] {$x_2=0$};
+        \coordinate (cA) at ([xshift=-13mm]and.south);
+        \coordinate (cB) at ([xshift=13mm]and.south);
+        \draw[fl] (cA) -- (n3) node[lbl, midway, left] {$x_3=0$};
+        \draw[fl] (cA) -- (n4) node[lbl, midway, right] {$x_3=1$};
+        \draw[fl] (cB) -- (n5) node[lbl, midway, right] {$x_6=1$};
+        \node[lbl, font=\scriptsize\bfseries, text=hl, below=1.5mm] at ($(n3.south)!0.5!(n4.south)$) {$\times\, 1/w(\neg x_4)$};
+        \node[lbl, align=center, below=1.5mm of n5] {learn $\neg x_4$\\ at level 0};
+      \end{tikzpicture}
     \end{column}
   \end{columns}
 \end{frame}
