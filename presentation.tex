@@ -6,7 +6,7 @@
 
 \usepackage{booktabs}
 \usepackage{qrcode}
-\usepackage{xcolor}
+\usepackage{colortbl}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{tikz}
@@ -230,10 +230,10 @@
   \begin{definition}[Dual independent set]
     For a formula $F$ over $V$ with projection set $\mathcal{P}$:
     \begin{enumerate}
-      \item \textbf{S-set} $S\subseteq \mathcal{P}$ \emph{defines} $\mathcal{P}$:
-        once all of $S$ is decided, we may switch to SAT mode.
-      \item \textbf{D-set} $D\supseteq \mathcal{P}$ is \emph{defined by} $\mathcal{P}$:
-        we may branch on it, the projected count does not change.
+      \item \textbf{S-set} (sampling set) $S\subseteq \mathcal{P}$ \emph{defines} $\mathcal{P}$:
+        all of $S$ decided $\Rightarrow$ SAT mode
+      \item \textbf{D-set} (decision set) $D\supseteq \mathcal{P}$ is \emph{defined by} $\mathcal{P}$:
+        safe to branch on
     \end{enumerate}
     Traditionally $D = S \subseteq \mathcal{P}$. We aim for
     $S \subseteq \mathcal{P} \subseteq D$: a \emph{small} $S$ to reach SAT
@@ -252,9 +252,9 @@
     \node[font=\small] at (3.5,0.35)  {$\mathcal{P}\setminus S$};
     \node[font=\small] at (6.75,0.35) {$D\setminus\mathcal{P}$};
     \node[font=\small] at (10.75,0.35){$V\setminus D$};
-    \draw[br] (0,0.8)  -- (2,0.8)  node[midway, above=3pt, lab] {S-set};
+    \draw[br] (0,0.8)  -- (2,0.8)  node[midway, above=3pt, lab] {sampling set};
     \draw[br] (0,1.4) -- (5,1.4) node[midway, above=3pt, lab] {projection $\mathcal{P}$};
-    \draw[br] (0,2.0)  -- (8.5,2.0) node[midway, above=3pt, lab] {D-set};
+    \draw[br] (0,2.0)  -- (8.5,2.0) node[midway, above=3pt, lab] {decision set};
     \node[role=19mm] at (1,-0.08)    {all decided\\$\Rightarrow$ SAT mode};
     \node[role=28mm] at (3.5,-0.08)  {defined by $S$:\\may branch on};
     \node[role=33mm] at (6.75,-0.08) {\emph{may} branch on:\\better component splits};
@@ -280,9 +280,6 @@
         \textbf{count-preserving} for the projection. BVE and
         equivalent-literal merging do most of the structural work.
       \end{block}
-      \scriptsize
-      Example \texttt{mc2023\_track3\_079}: 26\,351 vars $\to$ 420,
-      112\,951 clauses $\to$ 2\,504, projection 75 $\to$ 12, in 8.5\,s.
     \end{column}
     \begin{column}{0.50\textwidth}
       \centering
@@ -304,6 +301,77 @@
     J\"arvisalo, CP'21). SBVA: Haberlandt, Green, Heule, SAT'23.}
 \end{frame}
 
+
+\begin{frame}{The workhorse: bounded variable elimination (BVE)}
+  \begin{columns}[c]
+    \begin{column}{0.47\textwidth}
+      \small
+      To eliminate $x$:
+      \begin{itemize}
+        \item Replace every clause with $x$ and every clause with $\neg x$
+          by \textbf{all their resolvents} on $x$
+        \item Drop the tautologies
+        \item Only do it if the formula does not grow: \textbf{bounded}
+      \end{itemize}
+      \medskip
+      The result is $\exists x.\,F$: the count projected away from $x$ is
+      unchanged. So only variables \textbf{outside the projection} are
+      eliminated
+    \end{column}
+    \begin{column}{0.51\textwidth}
+      \centering\small
+      \renewcommand{\arraystretch}{1.5}
+      \begin{tabular}{@{}r|c|c@{}}
+        & \cellcolor{stageB!15}$\neg x\lor d$ & \cellcolor{stageB!15}$\neg x\lor\neg a\lor e$ \\ \hline
+        \cellcolor{stageA!15}$x\lor a\lor b$ & $a\lor b\lor d$ & \textcolor{ioBox!50}{$a\lor\neg a\lor\ldots$: taut.} \\ \hline
+        \cellcolor{stageA!15}$x\lor c$ & $c\lor d$ & $c\lor\neg a\lor e$ \\
+      \end{tabular}
+
+      \bigskip
+      \textbf{4 clauses} $\to$ \textbf{3 resolvents}, none with $x$:\\
+      fewer clauses, so eliminate $x$
+    \end{column}
+  \end{columns}
+  \slideref{Davis \& Putnam, JACM 1960. BVE: E\'en \& Biere, SAT'05.}
+\end{frame}
+
+\begin{frame}{Arjun by the numbers}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \centering\small
+      \texttt{mc2023\_track3\_079}\\[2pt]
+      \begin{tabular}{@{}lrr@{}}
+        \toprule
+        stage & variables & clauses \\
+        \midrule
+        input CNF            & 26\,351 & 112\,951 \\
+        S-set (projection)   & 75 $\to$ \textbf{12} & --- \\
+        Puura pass 1         & 414 & 2\,572 \\
+        + autarky, pass 2    & 413 & 2\,568 \\
+        SBVA                 & 420 & \textbf{2\,504} \\
+        D-set extension      & 17 $\to$ \textbf{49} & --- \\
+        \bottomrule
+      \end{tabular}\\[4pt]
+      98\% of variables and clauses gone, in 8.5\,s
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{exampleblock}{\small 1600 MCC'23+'24 CNFs}
+        \small
+        \begin{itemize}
+          \item Typically $\sim$87\% of variables and $\sim$67\% of clauses
+            removed, count unchanged
+          \item Structure: \textbf{BVE} and equivalent-literal merging do
+            nearly all of it
+          \item Time: backbone (CadiBack) 45\%, oracle vivify/sparsify 34\%,
+            BVE only 8\%
+        \end{itemize}
+      \end{exampleblock}
+      \scriptsize Everything else exists to set BVE up to do its job.
+    \end{column}
+  \end{columns}
+  \slideref{BVE: E\'en \& Biere, SAT'05. CadiBack: Biere, Froleyks, Wang, SAT'23.
+    Preprocessing for counting: Lagniez \& Marquis, AAAI'14.}
+\end{frame}
 
 % =========================================================================
 \section{Search}
@@ -547,7 +615,7 @@
   \end{columns}
 \end{frame}
 
-\begin{frame}{Compensating across components}
+\begin{frame}{ChronoBT needs compensating across components, too}
   \begin{columns}[c]
     \begin{column}{0.40\textwidth}
       \small
@@ -590,39 +658,6 @@
   \end{columns}
 \end{frame}
 
-\begin{frame}{Dynamic blocked clause elimination}
-  \begin{columns}[T]
-    \begin{column}{0.56\textwidth}
-      \small
-      \begin{itemize}
-        \item $C$ is \textbf{blocked} on $l \in C$ if every resolvent on
-          $l$ is a tautology. Removing it keeps the count projected
-          away from $\mathrm{var}(l)$
-        \item \textbf{Dynamic}\footnote{\scriptsize Lagniez, Marquis, Biere, SAT'24. Blocked clauses: Kullmann, 1999}:
-          under the current assignment satisfied clauses vanish, so
-          more clauses become blocked. Ignore them when computing
-          \textbf{components} $\Rightarrow$ finer splits, more cache hits
-        \item Sound in \ganak{} only on variables we never branch on:
-          outside the D-set
-        \item Incremental, undone in groups; ChronoBT can unassign
-          a variable while later ones stay set, so those are re-processed
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.42\textwidth}
-      \begin{exampleblock}{\small 1600 MCC'23+'24 instances}
-        \small
-        \begin{itemize}
-          \item \textbf{+11} solved, $-1$ lost:\\ 1210 $\to$ \textbf{1220}
-          \item PMC 282$\to$288, PWMC 336$\to$341
-          \item PAR2 1951 $\to$ 1899
-          \item projected, $>$10\,s: decisions $\times$0.42, time
-            $\times$0.87 (geo.\ mean)
-          \item 25 instances $\ge$2$\times$ faster, none $\ge$2$\times$ slower
-        \end{itemize}
-      \end{exampleblock}
-    \end{column}
-  \end{columns}
-\end{frame}
 
 % =========================================================================
 \section{Tree decomposition}
@@ -630,7 +665,8 @@
 % figs/td/*.pdf are generated: cd figs/td && ./make_td.py (runs ../treedecomp on td-example.cnf)
 \begin{frame}[fragile]{Tree decomposition: an example}
   \small Build a tree decomposition (TD) of the primal graph, with FlowCutter as in
-  SharpSAT-TD\footnote{\scriptsize Korhonen \& J\"arvisalo, CP'21}:
+  SharpSAT-TD\footnote{\scriptsize FlowCutter: Hamann \& Strasser, JEA 2018; Strasser, PACE 2017.
+  SharpSAT-TD: Korhonen \& J\"arvisalo, CP'21}:
   \begin{columns}[c]
     \begin{column}{0.11\textwidth}
       \footnotesize
@@ -648,7 +684,7 @@
     \end{column}
     \begin{column}{0.42\textwidth}
       \centering
-      \includegraphics[height=4.4cm]{figs/td/primal.pdf}\\
+      \includegraphics[height=4.2cm]{figs/td/primal.pdf}\\
       \scriptsize primal graph: an edge per pair of vars in a clause
     \end{column}
     \begin{column}{0.44\textwidth}
@@ -697,6 +733,96 @@
       \end{exampleblock}
       \scriptsize Width alone does not predict the work: TDs of the same
       width can differ 2.4$\times$ in decisions.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% =========================================================================
+\section{Dynamic BCE}
+
+\begin{frame}{Dynamic blocked clause elimination}
+  \small
+  \begin{itemize}
+    \item $C$ is \textbf{blocked} on $l \in C$ if every resolvent of $C$ on $l$
+      is a tautology. Removing $C$ keeps
+      the count projected away from $\mathrm{var}(l)$
+    \item \textbf{Dynamic}\footnote{\scriptsize Lagniez, Marquis, Biere, SAT'24. Blocked clauses: Kullmann, 1999}:
+      under the current assignment satisfied clauses vanish, so more clauses
+      become blocked. Ignore them when computing \textbf{components}
+  \end{itemize}
+  \medskip
+  \centering
+  $(a_1\lor a_2)\land\textcolor{hl}{(\neg a_2\lor x)}\land\textcolor{hl}{(x\lor b_1)}\land(b_1\lor b_2)\land(\neg x\lor c)$,
+  \quad $x$ outside the D-set
+  \medskip
+
+  \begin{tikzpicture}[x=1.4cm, y=1cm,
+      v/.style={circle, draw=ioBox, fill=white, semithick, minimum size=7mm, inner sep=0pt, font=\small},
+      nd/.style={v, fill=ioBox!12},
+      e/.style={semithick, draw=ioBox},
+      blk/.style={e, draw=hl, dashed, very thick},
+      gone/.style={e, draw=ioBox!35, dotted}]
+    \begin{scope}
+      \node[font=\small\bfseries] at (2,1.0) {before};
+      \node[v] (a1) at (0,0) {$a_1$}; \node[v] (a2) at (1,0) {$a_2$};
+      \node[nd] (x) at (2,0) {$x$};
+      \node[v] (b1) at (3,0) {$b_1$}; \node[v] (b2) at (4,0) {$b_2$};
+      \node[v] (c) at (2,-1.3) {$c$};
+      \draw[e] (a1) -- (a2) -- (x) -- (b1) -- (b2);
+      \draw[e] (x) -- (c);
+      \begin{scope}[on background layer]
+        \node[draw=stageC, fill=stageC!12, rounded corners=4pt, fit=(a1)(b2)(c), inner sep=2.5mm] (bx) {};
+      \end{scope}
+      \node[font=\scriptsize, text=stageC!70!black, anchor=north] at (2,-1.9) {one component};
+    \end{scope}
+    \begin{scope}[xshift=8.0cm]
+      \node[font=\small\bfseries] at (2,1.0) {after deciding $c=1$};
+      \node[v] (a1) at (0,0) {$a_1$}; \node[v] (a2) at (1,0) {$a_2$};
+      \node[nd] (x) at (2,0) {$x$};
+      \node[v] (b1) at (3,0) {$b_1$}; \node[v] (b2) at (4,0) {$b_2$};
+      \node[v, draw=ioBox!40, text=ioBox!60] (c) at (2,-1.3) {$c$};
+      \draw[e] (a1) -- (a2);
+      \draw[blk] (a2) -- (x) -- (b1);
+      \node[font=\scriptsize, text=hl] at (2,0.62) {blocked on $x$};
+      \draw[e] (b1) -- (b2);
+      \draw[gone] (x) -- node[font=\scriptsize, right=1mm, text=ioBox!60] {satisfied} (c);
+      \begin{scope}[on background layer]
+        \node[draw=stageA, fill=stageA!12, rounded corners=4pt, fit=(a1)(a2), inner sep=2.5mm] (ba) {};
+        \node[draw=stageB, fill=stageB!14, rounded corners=4pt, fit=(b1)(b2), inner sep=2.5mm] {};
+      \end{scope}
+      \node[font=\scriptsize, anchor=north] at (2,-1.9) {no $\neg x$ left: two components};
+    \end{scope}
+    \draw[-{Stealth[length=3mm]}, very thick, draw=ioBox, shorten <=2mm, shorten >=2mm]
+      (bx.east |- ba.west) -- node[above, font=\small] {$c=1$} (ba.west);
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Dynamic BCE in \ganak{}}
+  \begin{columns}[T]
+    \begin{column}{0.54\textwidth}
+      \small
+      \begin{itemize}
+        \item Only on variables we never branch on: outside the D-set,
+          as removal is count-preserving only when $\mathrm{var}(l)$ is projected away
+        \item Finer splits $\Rightarrow$ smaller components $\Rightarrow$
+          more cache hits
+        \item Incremental, and undone in groups when backtracking
+        \item ChronoBT can unassign a variable while later ones stay set,
+          so those clauses are re-processed
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{exampleblock}{\small 1600 MCC'23+'24 instances}
+        \small
+        \begin{itemize}
+          \item \textbf{+11} solved, $-1$ lost:\\ 1210 $\to$ \textbf{1220}
+          \item PMC 282$\to$288, PWMC 336$\to$341
+          \item PAR2 1951 $\to$ 1899
+          \item projected, $>$10\,s: decisions $\times$0.42, time
+            $\times$0.87 (geo.\ mean)
+          \item 25 instances $\ge$2$\times$ faster, none $\ge$2$\times$ slower
+        \end{itemize}
+      \end{exampleblock}
     \end{column}
   \end{columns}
 \end{frame}
