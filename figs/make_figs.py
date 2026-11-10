@@ -22,6 +22,13 @@ GRAPHS = {
         ("out-others-d4", "d4"),
         ("out-ganak-mc2324-14063135-0", "Ganak2 (CAV'25)"),
     ]),
+    "cav-unproj": dict(yr=(350, 560), of=800, where="(fname like '%track1%' or fname like '%track2%')", runs=[
+        ("out-ganak-mc2324-14063135-1", "Ganak (2019)"),
+        ("out-others-gpmc", "gpmc"),
+        ("out-others-d4", "d4"),
+        ("out-others-14064944-0", "SharpSAT-TD"),
+        ("out-ganak-mc2324-14063135-0", "Ganak2 (CAV'25)"),
+    ]),
     "new-versions": dict(yr=(1100, 1225), xr=(500, TOUT), runs=[
         ("out-ganak-mccomp2324-1783906-0", "Jun 2026 baseline"),
         ("out-ganak-mccomp2324-2345011-2", "+new TD selection"),
@@ -32,9 +39,9 @@ GRAPHS = {
 }
 
 
-def times(cur, dirname):
+def times(cur, dirname, where):
     rows = cur.execute("select ganak_time from data where dirname=? and ganak_time is not null "
-                       "and ganak_time < ? order by ganak_time", (dirname, TOUT)).fetchall()
+                       f"and ganak_time < ? and {where} order by ganak_time", (dirname, TOUT)).fetchall()
     return [r[0] for r in rows]
 
 
@@ -43,7 +50,7 @@ def main():
     for name, g in GRAPHS.items():
         plots = []
         for i, (d, title) in enumerate(g["runs"]):
-            ts = times(cur, d)
+            ts = times(cur, d, g.get("where", "1"))
             dat = f"{name}-{i}.dat"
             with open(dat, "w") as f:
                 f.write("0 0\n")
@@ -57,7 +64,7 @@ def main():
 set output "{name}.pdf"
 set key outside right center spacing 1.3 samplen 2 invert
 set xlabel "Time (s)"
-set ylabel "Instances counted (of 1600)"
+set ylabel "Instances counted (of {g.get('of', 1600)})"
 set grid lc rgb "#dddddd"
 set border lc rgb "#555555"
 set xrange [{g.get('xr', (0, TOUT))[0]}:{g.get('xr', (0, TOUT))[1]}]

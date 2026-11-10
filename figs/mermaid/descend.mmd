@@ -1,7 +1,7 @@
 flowchart LR
   Q{{"S-set vars<br/>left?"}}
   Q -->|no| SAT("SAT solver:<br/>one solution<br/>is enough")
-  Q -->|yes| DEC("decide a var of<br/>this component<br/>(TD + VSIDS<br/>+ frequency)")
+  Q -->|yes| DEC("decide a var of<br/>this component<br/>(TD + activity<br/>+ frequency)")
   DEC --> P{{propagate}}
   P -->|"ok"| OUT("split &amp; pick<br/>a component")
   P -->|"conflict"| UIP("learn 1-UIP clause,<br/>ChronoBT;<br/>branch counts 0")

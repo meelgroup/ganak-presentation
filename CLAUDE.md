@@ -7,7 +7,7 @@ Beamer talk on Ganak (`presentation.tex`). Build with `latexmk -pdf presentation
   `cd figs/mermaid && ./render.sh`. Do NOT call `mmdc` directly: `render.sh` gives
   Chromium a private fontconfig with TeX Live's Latin Modern Sans (the beamer font)
   and applies `config.json`.
-- `figs/{cav-versions,cav-solvers,new-versions}.pdf` (cactus plots): `cd figs && ./make_figs.py`,
+- `figs/{cav-versions,cav-solvers,cav-unproj,new-versions}.pdf` (cactus plots): `cd figs && ./make_figs.py`,
   reads `data/results.sqlite3`.
 
 ## Data
