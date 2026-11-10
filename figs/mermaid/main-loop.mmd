@@ -1,8 +1,8 @@
 flowchart LR
   F{{"component left<br/>at this level?"}}
   F -->|yes| D["<b>Descend</b><br/>cache lookup;<br/>on a miss: decide<br/>and propagate"]
-  D -->|"<span class='lbl-green'>no<br/>conflict</span>"| F
-  D -->|"<span class='lbl-red'>conflict</span>"| A["analyse<br/>conflict,<br/>learn a clause"]
+  D -->|"no<br/>conflict"| F
+  D -->|"conflict"| A["analyse<br/>conflict,<br/>learn a clause"]
   F -->|no| U["<b>Ascend</b><br/>add the two branches,<br/>cache, multiply<br/>into parent"]
   A --> U
   U -->|"stack not<br/>empty"| F

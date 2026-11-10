@@ -11,6 +11,5 @@
     "curve": "basis",
     "padding": 5,
     "htmlLabels": true
-  },
-  "themeCSS": ".lbl-red{background:#f8e2e2;padding:1px 4px;border-radius:3px} .lbl-green{background:#e6f2e3;padding:1px 4px;border-radius:3px}"
+  }
 }

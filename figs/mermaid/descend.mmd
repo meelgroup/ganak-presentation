@@ -3,8 +3,8 @@ flowchart LR
   Q -->|no| SAT["SAT solver:<br/>one solution<br/>is enough"]
   Q -->|yes| DEC["decide a var of<br/>this component<br/>(TD + VSIDS<br/>+ frequency)"]
   DEC --> P{{propagate}}
-  P -->|"<span class='lbl-green'>ok</span>"| OUT(["next<br/>component"])
-  P -->|"<span class='lbl-red'>conflict</span>"| UIP["learn 1-UIP clause,<br/>ChronoBT;<br/>branch counts 0"]
+  P -->|"ok"| OUT(["next<br/>component"])
+  P -->|"conflict"| UIP["learn 1-UIP clause,<br/>ChronoBT;<br/>branch counts 0"]
   UIP -->|"asserting<br/>literal"| P
   UIP -->|"branch<br/>done"| ASC([ascend])
 
