@@ -472,24 +472,24 @@
     \node[rlab] at (-0.6,-1.4) {backjump};
     \node[rlab] at (-0.6,-2.8) {ChronoBT};
 
-    \tdec{0,0}{x_1}{1}{stageA} \tlit{1,0}{a}{1}{stageA}
-    \tdec{2.2,0}{x_2}{2}{stageB} \tlit{3.2,0}{c}{2}{stageB}
-    \tdec{4.4,0}{x_3}{3}{stageC} \tlit{5.4,0}{\neg b}{3}{stageC}
+    \tdec{0,0}{x_1}{1}{stageA} \tlit{1,0}{x_2}{1}{stageA}
+    \tdec{2.2,0}{x_3}{2}{stageB} \tlit{3.2,0}{x_4}{2}{stageB}
+    \tdec{4.4,0}{x_5}{3}{stageC} \tlit{5.4,0}{\neg x_6}{3}{stageC}
     \node[font=\large, text=hl] at (6.2,0) {\Lightning};
     \node[anchor=west, font=\scriptsize, align=left] at (6.5,0)
-      {learn $(\neg a \lor b)$:\\ $b$ is implied at level 1};
+      {learn $(\neg x_2 \lor x_6)$:\\ $x_6$ is implied at level 1};
 
-    \tdec{0,-1.4}{x_1}{1}{stageA} \tlit{1,-1.4}{a}{1}{stageA}
-    \tlit{2.2,-1.4}{b}{1}{stageA}
+    \tdec{0,-1.4}{x_1}{1}{stageA} \tlit{1,-1.4}{x_2}{1}{stageA}
+    \tlit{2.2,-1.4}{x_6}{1}{stageA}
     \node[anchor=west, font=\scriptsize, align=left, text=hl] at (3.0,-1.4)
       {levels 2 and 3 undone:\\ the work at level 2 is lost};
 
-    \tdec{0,-2.8}{x_1}{1}{stageA} \tlit{1,-2.8}{a}{1}{stageA}
-    \tdec{2.2,-2.8}{x_2}{2}{stageB} \tlit{3.2,-2.8}{c}{2}{stageB}
-    \tlit{4.4,-2.8}{b}{1}{stageA}
+    \tdec{0,-2.8}{x_1}{1}{stageA} \tlit{1,-2.8}{x_2}{1}{stageA}
+    \tdec{2.2,-2.8}{x_3}{2}{stageB} \tlit{3.2,-2.8}{x_4}{2}{stageB}
+    \tlit{4.4,-2.8}{x_6}{1}{stageA}
     \draw[hl, very thick, rounded corners=2pt] (3.95,-3.12) rectangle (4.85,-2.48);
     \node[anchor=west, font=\scriptsize, align=left, text=stageB!70!black] at (5.1,-2.8)
-      {only level 3 undone; $b$ keeps level 1\\ but sits above level 2: \textbf{out of order}};
+      {only level 3 undone; $x_6$ keeps level 1\\ but sits above level 2: \textbf{out of order}};
   \end{tikzpicture}
 
   \bigskip
@@ -498,7 +498,7 @@
     \item Boxes: trail literals with their decision level; thick border = decision
     \item In a counter, level 2 may already hold counted branches and
       components: ChronoBT keeps them
-    \item The price: counts computed before $b$ was known need care
+    \item The price: counts computed before $x_6$ was known need care
       (next slides)
   \end{itemize}
 \end{frame}
